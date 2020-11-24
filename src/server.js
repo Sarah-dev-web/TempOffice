@@ -9,8 +9,19 @@ function makeApp(db) {
 
   // This should be the last call to `app` in this file
   app.get ("/",async(req,res) => {
-    // res.send("Coucou la famille")
-    console.log("coucou");
+    res.send("Bienvenue, vos réunions ou vous voulez en quelques clics ;-)")
+    // console.log("coucou");
+  })
+
+  app.get ("/locations",async(req,res) => {
+    res.send("les locations disponibles")
+  })
+
+  app.get ("/locations/:location_id", async(req,res)=>{
+    res.send("la location 1")
+  })
+  app.post ("/locations/:location_id", async(req,res)=>{
+    res.send("la location 1 POST")
   })
 
   
