@@ -8,6 +8,12 @@ function makeApp(db) {
   const jsonParser = bodyParser.json();
 
   // This should be the last call to `app` in this file
+  app.get ("/",async(req,res) => {
+    // res.send("Coucou la famille")
+    console.log("coucou");
+  })
+
+  
   app.use((error, req, res) => {
     console.error(error);
   });
