@@ -2,4 +2,4 @@
 
 Projet final de la formation 
 
-Location de biens pour vos activitées professionels
+Location de biens pour vos activitées professionelles
