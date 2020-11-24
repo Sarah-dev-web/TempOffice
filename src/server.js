@@ -7,6 +7,22 @@ function makeApp(db) {
   const app = express();
   const jsonParser = bodyParser.json();
 
+  app.get("/", async (req, res) => {
+    res.send("Bienvenue, vos réunions ou vous voulez en quelques clics ;-)");
+    // console.log("coucou");
+  });
+
+  app.get("/locations", async (req, res) => {
+    res.send("les locations disponibles");
+  });
+
+  app.get("/locations/:location_id", async (req, res) => {
+    res.send("la location 1");
+  });
+  app.post("/locations/:location_id", async (req, res) => {
+    res.send("la location 1 POST");
+  });
+
   //  annonce qui se retrouve sur la page la location (
   app.get("api/creation_annonce", async (req, res) => {
     const result = " veuillez vous logger";
@@ -26,31 +42,8 @@ function makeApp(db) {
     res.send("result");
   });
 
-  app.get("/", async function (req, res) {
-    const result = await db.collection("sellers").find().toArray();
-    //const resultFinal = result.json();
-    console.log(result); // affiche les données dans le terminal
-    res.json(result); // affiche les données sur localhost
-  });
-
   // This should be the last call to `app` in this file
-  app.get ("/",async(req,res) => {
-    res.send("Bienvenue, vos réunions ou vous voulez en quelques clics ;-)")
-    // console.log("coucou");
-  })
 
-  app.get ("/locations",async(req,res) => {
-    res.send("les locations disponibles")
-  })
-
-  app.get ("/locations/:location_id", async(req,res)=>{
-    res.send("la location 1")
-  })
-  app.post ("/locations/:location_id", async(req,res)=>{
-    res.send("la location 1 POST")
-  })
-
-  
   app.use((error, req, res) => {
     console.error(error);
   });
