@@ -25,7 +25,7 @@ function makeApp(db) {
   });
 
   app.get("/locations/:location_id", async (req, res) => {
-    res.send("la location 1");
+    res.render("pages/locationid");
   });
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
