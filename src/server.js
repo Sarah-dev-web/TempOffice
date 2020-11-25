@@ -2,13 +2,21 @@ const express = require("express");
 const bodyParser = require("body-parser");
 // import * as core from "express-serve-static-core";
 // import slugify from "slug";
+const nunjucks = require("nunjucks");
 
 function makeApp(db) {
   const app = express();
   const jsonParser = bodyParser.json();
 
+  nunjucks.configure("views", {
+    autoescape: true,
+    express: app,
+  });
+
+  app.set("view engine", "njk");
+
   app.get("/", async (req, res) => {
-    res.send("Bienvenue, vos réunions ou vous voulez en quelques clics ;-)");
+    res.render("pages/home");
     // console.log("coucou");
   });
 
