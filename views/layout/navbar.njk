@@ -6,24 +6,28 @@
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
       <li class="nav-item">
-        <a class="nav-link title" href="/games"></a>
+        <a class="nav-link title" href=""></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link title" href="/platforms"></a>
+        <a class="nav-link title" href=""></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link title" href="/api">barre de recherche en attente</a>
-      </li>
+        <form class="form-inline">
+           <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+        </form>
+     </li>
+     <li> 
+        <div class="d-flex justify-content-end">
+            <a href=""> 
+               <button type="button" class="btn btn-warning" type="submit"> Proposer un bien</button></a>
+                
+            <a href={{ login_url }}> <button type="button" class="btn btn-secondary" type="submit">Login</button></a>
+        </div>
+     </li>
     </ul>
   </div>
-
-  <div>
-    <div class="d-flex justify-content-end">
-      <a href=""> 
-        <button type="button" class="btn btn-warning" type="submit"> Proposer un bien</button></a>
-          
-      </a>  
-      <a href={{ login_url }}> <button type="button" class="btn btn-secondary" type="submit">Login</button></a>
-    </div>
+    
+   
   </div>
 </nav>
