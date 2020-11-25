@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 // import slugify from "slug";
 const nunjucks = require("nunjucks");
 
+
 function makeApp(db) {
   const app = express();
   const jsonParser = bodyParser.json();
@@ -32,14 +33,15 @@ function makeApp(db) {
   });
 
   //  annonce qui se retrouve sur la page la location (
-  app.get("api/creation_annonce", async (req, res) => {
-    const result = " veuillez vous logger";
+  app.get("/api/creation_annonce", async (req, res) => {
+    // const result = " veuillez vous logger";
     // await db.collection("").findOne;
-    //console.log(result);
-    res.send("result");
+    // console.log(result);
+    res.render("pages/FormCreatAnn");
   });
+
   //  création de l'annonce par le vendeur (
-  app.post("api/creation_annonce", async (req, res) => {});
+  app.post("/api/creation_annonce", async (req, res) => { });
 
   //
   app.get("/api/login", async (req, res) => {
