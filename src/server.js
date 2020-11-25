@@ -3,6 +3,16 @@ const bodyParser = require("body-parser");
 // import * as core from "express-serve-static-core";
 // import slugify from "slug";
 const nunjucks = require("nunjucks");
+const OAuth2Client = require("@fwl/oauth2");
+const mongoSession = require("connect-mongo");
+const session = require("express-session");
+const MongoClient = require("mongodb");
+
+const clientWantsJson = (request) =>
+  request.get("accept") === "application/json";
+
+const jsonParser = bodyParser.json();
+const formParser = bodyParser.urlencoded({ extended: true });
 
 function makeApp(db) {
   const app = express();
@@ -12,8 +22,47 @@ function makeApp(db) {
     autoescape: true,
     express: app,
   });
-  
+
   app.set("view engine", "njk");
+
+  const MongoStore = mongoSession(session);
+
+  const sessionParser = session({
+    secret: "rEqcX9FdBQtYGxsunwQocIFp02-Mler7NctrZotIXME=",
+    name: "TempOffice",
+    resave: false,
+    saveUninitialized: true,
+    // store: new MongoStore({
+    //   client: MongoClient,
+    // }),
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      expires: new Date(Date.now() + 3600000),
+    },
+  });
+
+  const oauthClientConstructorProps = {
+    openIDConfigurationURL:
+      "https://fewlines.connect.prod.fewlines.tech/.well-known/openid-configuration",
+    clientID: `${process.env.CLIENT_ID}`,
+    clientSecret: `${process.env.CLIENT_SECRET}`,
+    redirectURI: "http://localhost:8080/oauth/callback",
+    audience: `${process.env.AUDIENCE}`,
+    scopes: ["openid", "email"],
+  };
+
+  //   PORT=8080
+  // MONGO_URI="mongodb+srv://Riam:maman@cluster0.v2iwm.mongodb.net/Batch1?retryWrites=true&w=majority"
+  // SESSIONSECRET='sMP282xYjhTKxkhnZnfADtaymsuDFuAc'
+  // OPEN_ID='https://fewlines.connect.prod.fewlines.tech/.well-known/openid-configuration'
+  // CLIENT_ID='ggtpH9bmNWV2Z4_aNS1aYw=='
+  // CLIENT_SECRET='rEqcX9FdBQtYGxsunwQocIFp02-Mler7NctrZotIXME='
+  // AUDIENCE='tempoffice'
+  // NAME='tempoffice'
+  // JWT_ALGORITHM='RS256'
+  // OAUTH_CALLBACK_URL='http://localhost:8080/oauth/callback'
+
+  const oauthClient = new OAuth2Client.default(oauthClientConstructorProps);
 
   app.get("/", async (req, res) => {
     res.render("pages/home");
@@ -41,7 +90,33 @@ function makeApp(db) {
   //  création de l'annonce par le vendeur (
   app.post("api/creation_annonce", async (req, res) => {});
 
-  //
+  app.get("/api/login", async (req, res) => {
+    const authURL = await oauthClient.getAuthorizationURL("state");
+
+    const authURLinString = authURL.toString();
+    res.redirect(authURLinString);
+  });
+
+  app.get("/api/logout", sessionParser, async (req, res) => {
+    if (req.session) {
+      req.session.destroy(() => {
+        res.render("pages/home", { isLoggedIn: false });
+      });
+    }
+  });
+
+  app.get("/oauth/callback", sessionParser, async (req, response) => {
+    const stringiAuthCode = `${request.query.code}`;
+    const token = await oauthClient.getTokensFromAuthorizationCode(
+      stringiAuthCode
+    );
+    console.log(token);
+    if (request.session) {
+      request.session.accessToken = token.access_token;
+    }
+    response.redirect("/");
+  });
+
   app.get("/api/login", async (req, res) => {
     res.send("result");
   });
@@ -51,7 +126,7 @@ function makeApp(db) {
   });
 
   // This should be the last call to `app` in this file
-  app.use('/static', express.static('public'));
+  app.use("/static", express.static("public"));
   app.use((error, req, res) => {
     console.error(error);
   });

@@ -1,5 +1,5 @@
 const dotenv = require("dotenv");
-const { MongoClient } = require("mongodb");
+const MongoClient = require("mongodb");
 const { makeApp } = require("./src/server.js");
 const express = require("express");
 
