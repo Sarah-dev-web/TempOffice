@@ -12,7 +12,7 @@ function makeApp(db) {
     autoescape: true,
     express: app,
   });
-
+  
   app.set("view engine", "njk");
 
   app.get("/", async (req, res) => {
@@ -21,7 +21,7 @@ function makeApp(db) {
   });
 
   app.get("/locations", async (req, res) => {
-    res.send("les locations disponibles");
+    res.render("pages/location");
   });
 
   app.get("/locations/:location_id", async (req, res) => {
@@ -51,7 +51,7 @@ function makeApp(db) {
   });
 
   // This should be the last call to `app` in this file
-
+  app.use('/static', express.static('public'));
   app.use((error, req, res) => {
     console.error(error);
   });
