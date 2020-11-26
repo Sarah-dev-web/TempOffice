@@ -103,13 +103,6 @@ function makeApp(mongoClient) {
 
   //  création de l'annonce par le vendeur (
   // app.post("/api/creation_annonce", async (req, res) => { });
-  
-  app.post('/api/creation_annonce', function(req, res){
-    const formData = req.body
-    db.collection("Annonces").insertOne(formData);
-    console.log(formData);
-    res.end('');    
-  })
 
   app.get("/api/login", async (req, res) => {
     const authURL = await oauthClient.getAuthorizationURL("state");
@@ -139,6 +132,28 @@ function makeApp(mongoClient) {
     }
     res.redirect("/");
   });
+
+
+  app.post("/api/creation_annonce", async (req, res) => {
+    const dataForm = req.body;
+    const annonce = {
+      titre: dataForm.titre,
+      prix: dataForm.prix,
+      taille: dataForm.taille,
+      datedebut: dataForm.datedebut,
+      datefin: dataForm.datefin,
+      adresse: dataForm.adresse,
+      codepostal: dataForm.codepostal,
+      ville: dataForm.ville,
+      mobilier: dataForm.mobilier,
+      description: dataForm.description,
+    };
+    db.collection("Annonces").insertOne(annonce);
+    res.end('');
+  });
+// POUR L'INSTANT IL REDIRIGE VERS HOME 
+// PAS CERTAIN QUE LES PHOTOS FONCTIONNENT
+  //
 
   app.get("/api/login", async (req, res) => {
     res.send("result");
