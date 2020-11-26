@@ -23,6 +23,9 @@
                <button type="button" class="btn btn-warning" type="submit"> Proposer un bien</button></a>
                 
             <a href="/api/login"> <button type="button" class="btn btn-secondary" type="submit">Login</button></a>
+            {% if isLoggedIn %}
+            <a href="/api/logout"> <button type="button" class="btn btn-secondary" type="submit">logout</button></a>
+            {% endif %}
         </div>
      </li>
     </ul>
