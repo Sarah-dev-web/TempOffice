@@ -25,6 +25,10 @@ function makeApp(mongoClient) {
     express: app,
   });
 
+  app.use(bodyParser.urlencoded({ extended: false }));
+
+  app.use(bodyParser.json())
+
   app.set("view engine", "njk");
 
   const MongoStore = mongoSession(session);
@@ -99,24 +103,12 @@ function makeApp(mongoClient) {
 
   //  création de l'annonce par le vendeur (
   // app.post("/api/creation_annonce", async (req, res) => { });
-  app.post('/api/creation_annonce', function(req, res){
-    let titre = req.body.titre
-    let prix = req.body.password
-    let taille = req.body.taille
-    let datedebut = req.body.datedebut
-    let datefin = req.body.datefin
-    let adresse = req.body.adresse
-    let ville = req.body.ville
-    let filename2 = req.body.filename2
-    let mobilier = req.body.mobilier
-    let checked = req.body.checked
-    let description = req.body.description
-
-    // 'on' (checked) or undefined (off)
   
-   // With a veiw-engine - render the 'chat' view, with the username
-   res.send('/annonces', {req})
-  
+  app.post('/locations', function(req, res){
+    const formData = req.body
+    db.collection("Annonces").insertOne(formData);
+    console.log(formData);
+    res.end();    
   })
 
   app.get("/api/login", async (req, res) => {
@@ -159,7 +151,7 @@ function makeApp(mongoClient) {
   // This should be the last call to `app` in this file
   app.use("/static", express.static("public"));
   app.use((error, req, res) => {
-    console.error(error);
+    // console.error(error);
   });
 
   return app;
