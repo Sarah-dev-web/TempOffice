@@ -24,7 +24,10 @@
 
             <a href="/api/creation_annonce" <button type="button" class="btn btn-secondary" type="submit">Proposer ma salle</button></a>" 
                 
-            <a href={{ login_url }}> <button type="button" class="btn btn-secondary" type="submit">Login</button></a>
+            <a href="/api/login"> <button type="button" class="btn btn-secondary" type="submit">Login</button></a>
+            {% if isLoggedIn %}
+            <a href="/api/logout"> <button type="button" class="btn btn-secondary" type="submit">logout</button></a>
+            {% endif %}
         </div>
      </li>
     </ul>
