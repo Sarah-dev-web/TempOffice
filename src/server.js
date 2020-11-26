@@ -104,11 +104,11 @@ function makeApp(mongoClient) {
   //  création de l'annonce par le vendeur (
   // app.post("/api/creation_annonce", async (req, res) => { });
   
-  app.post('/locations', function(req, res){
+  app.post('/api/creation_annonce', function(req, res){
     const formData = req.body
     db.collection("Annonces").insertOne(formData);
     console.log(formData);
-    res.end();    
+    res.end('');    
   })
 
   app.get("/api/login", async (req, res) => {
