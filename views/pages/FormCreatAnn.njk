@@ -1,0 +1,70 @@
+{% extends "layout/index.njk" %}
+​
+{% block beforeContainer %}
+ 
+{% endblock %}
+​
+{% block content %}
+<body>
+  <form method="POST" action="/locations">
+    <div class="form-group">
+      <label for="usr">Titre : </label>
+      <input type="text" class="form-control" name="titre" id="inputtitre" >
+    </div>
+     <div class="form-group">
+      <label for="usr">Prix : </label>
+      <input type="price" class="form-control" name="prix" id="inputprix" >
+    </div>
+    <div class="form-group">
+      <label for="usr">Taille :</label>
+      <input type="text" class="form-control" name="taille" id="taille">
+    </div>
+    <div> 
+    <p> Disponible du : </p>
+      <input type="text" name="datedebut" id="datepicker" value="12 octobre 2020">
+    </div>
+    <div>
+     <p> Au : </p>
+      <input type="text" name="datefin" id="datepickerFin" value="15 octobre 2020">
+    </div>
+     <div class="form-group">
+    <label for="inputAddress">Adresse : </label>
+    <input type="text" class="form-control" name="adresse" id="adresse" placeholder="1234 Main St">
+  </div>
+  <div class="form-row">
+    <div class="form-group col-md-6">
+      <label for="inputCity">Ville : </label>
+      <input type="text" class="form-control" name="ville" id="inputCity">
+    </div>
+    </div> 
+    <p>Photo du bien : </p>
+    <div id="AjoutIm">
+       <input type="file" id="myFile" name="filename2">
+    </div>
+    <p>Liste du mobilier</p>
+      
+    <div class="form-group">
+      <textarea class="form-control" rows="5" id="mobilier" name="mobilier"></textarea>
+    </div>
+
+       
+    </div>
+    <div class="col-auto my-1">
+      <div class="custom-control custom-checkbox mr-sm-2">
+        <input type="checkbox" class="custom-control-input" name="checked" id="customControlAutosizing">
+      </div>
+    </div>
+  </div>
+</form>
+<div class="container">
+  <p>Description</p>
+  <form action="/action_page.php">
+    <div class="form-group">
+      <textarea class="form-control" rows="5" id="description" name="description"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Valider</button> 
+  </form>
+</div>
+</body>
+</form>
+{% endblock %}
