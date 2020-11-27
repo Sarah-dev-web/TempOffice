@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 // import * as core from "express-serve-static-core";
 // import slugify from "slug";
 const nunjucks = require("nunjucks");
+const nodemailer = require('nodemailer');
 
 
 function makeApp(db) {
@@ -13,6 +14,7 @@ function makeApp(db) {
     autoescape: true,
     express: app,
   });
+  app.use(bodyParser.urlencoded({ extended: false }));
 
   app.set("view engine", "njk");
 
@@ -22,6 +24,7 @@ function makeApp(db) {
   });
 
   app.get("/locations", async (req, res) => {
+
     res.render("pages/location");
   });
 
@@ -31,6 +34,33 @@ function makeApp(db) {
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
+  app.post("/api/sendMail", async (req, res) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "tempoffice.contact@gmail.com",
+        pass: process.env.PASSWORD_MAIL,
+      }
+    });
+
+    const mailOptions = {
+      from: "tempoffice.contact@gmail.com",
+      to: "fmariama219@gmail.com",
+      subject: "Sending Email using Node.js",
+      text: "That was easy!"
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        // console.log(error);
+        res.json("ereur")
+      } else {
+        // console.log("Email sent: " + info.response);
+        res.json("good")
+      }
+    });
+    // res.send("bonjour")
+  })
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", async (req, res) => {
@@ -41,27 +71,29 @@ function makeApp(db) {
   });
 
   //  création de l'annonce par le vendeur (
-  // app.post("/api/creation_annonce", async (req, res) => { });
-  app.post('/api/creation_annonce', function(req, res){
-    let titre = req.body.titre
-    let prix = req.body.password
-    let taille = req.body.taille
-    let datedebut = req.body.datedebut
-    let datefin = req.body.datefin
-    let adresse = req.body.adresse
-    let ville = req.body.ville
-    let filename2 = req.body.filename2
-    let mobilier = req.body.mobilier
-    let checked = req.body.checked
-    let description = req.body.description
 
-    // 'on' (checked) or undefined (off)
-  
-   // With a veiw-engine - render the 'chat' view, with the username
-   res.send('/annonces', {req})
-  
-  })
+  app.post("/locations", async (req, res) => {
+    const dataForm = req.body;
+    const annonce = {
+      titre: dataForm.titre,
+      description: dataForm.description,
+      prix: dataForm.prix,
+      taille: dataForm.taille,
+      datedebut: dataForm.datedebut,
+      datefin: dataForm.datefin,
+      adresse: dataForm.adresse,
+      ville: dataForm.ville,
+      filename: dataForm.filename,
+      mobilier: dataForm.mobilier,
+      checked: dataForm.checked,
+      description: dataForm.description
+    }
+    // console.log("DATAFORM", dataForm);
+    db.collection("Annonces").insertOne({ annonce })
 
+    res.render("pages/location");
+  });
+  app.get("/locations")
   //
   app.get("/api/login", async (req, res) => {
     res.send("result");
@@ -80,7 +112,12 @@ function makeApp(db) {
   return app;
 }
 
+
+
+
 module.exports = { makeApp };
+
+
 
 // app.get("/platforms", async (request, response) => {
 //   const platformList = await db.collection("platforms").find().toArray();
