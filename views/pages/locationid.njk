@@ -1,0 +1,27 @@
+{% extends "layout/index.njk" %}
+
+{% block beforeContainer %}
+ 
+{% endblock %}
+
+{% block content %}
+
+<div class="card mb-3">
+  <img class="card-img-top" src="/static/images/1.jpg" alt="Card image cap">
+  <div class="card-body">
+    <h5 class="card-title">{{annonce.titre}}</h5>
+    <p class="card-text">{{annonce.description}}</p>
+    <p class="card-text"><small class="text-muted">{{annonce._id}}</small></p>
+
+    {{locationid}}
+  </div>
+</div>
+
+
+
+
+
+
+
+
+  {% endblock %}

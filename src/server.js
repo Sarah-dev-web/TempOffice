@@ -87,8 +87,14 @@ function makeApp(mongoClient) {
   });
 
   app.get("/locations/:location_id", async (req, res) => {
-    res.render("pages/location_id");
-  });
+    const locationId = req.params.location_id;
+    const annonce = await db.collection("Annonces").findOne({"_id.$oid":locationId}.toArray);
+    console.log(annonce)
+    res.render("pages/locationid",{annonce, locationId});
+  }); 
+// PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
+
+
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
