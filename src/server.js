@@ -144,7 +144,7 @@ function makeApp(mongoClient) {
     const dataEmailBdUser = dataEmailBd.Mail;
     //console.log("email bd user ", dataEmailBdUser);
 
-    // si email est dans la DB, l'user reste connecté, sinon on l'invite à créer un compte
+    // si email est déjà enregistré dans la DB, l'user reste connecté, sinon on l'invite à créer un compte
     if (dataEmailUser === dataEmailBdUser && req.session) {
       req.session.accessToken = token.access_token;
       console.log("vous restez connecté");
@@ -152,7 +152,17 @@ function makeApp(mongoClient) {
       // récupération des données du token de l'user pour les enregistrer dans la base de données
       const dataNewUser = decodedPayload;
       console.log("données du NewUser", dataNewUser);
-      db.collection("Users").create();
+
+      const insertedData = {
+        mail: dataNewUser.email,
+        annonce_vendeur: [],
+        annonce_acheteur: [],
+        data_fewlines: dataNewUser,
+      };
+      const ajoutDataNewUser = await db
+        .collection("Users")
+        .insertOne(insertedData);
+      console.log("ajout données dans BD", ajoutDataNewUser);
 
       console.log(
         "warning, couldn't put the tokens in session, vous devez créer un compte"
