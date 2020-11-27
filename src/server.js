@@ -83,7 +83,10 @@ function makeApp(mongoClient) {
   });
 
   app.get("/locations", async (req, res) => {
-    res.render("pages/location");
+    const annonces = await db.collection("Annonces").find().toArray();
+    // res.json(annonce);
+      // res.render("pages/location");
+      res.render("pages/location", {annonces});
   });
 
   app.get("/locations/:location_id", async (req, res) => {
@@ -152,7 +155,8 @@ function makeApp(mongoClient) {
     res.end('');
   });
 // POUR L'INSTANT IL REDIRIGE VERS HOME 
-// PAS CERTAIN QUE LES PHOTOS FONCTIONNENT
+// PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
+
   //
 
   app.get("/api/login", async (req, res) => {
