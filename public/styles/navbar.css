@@ -7,3 +7,8 @@
   background-color: #F8F8F8;
   border-color: #bdab0e;
 }
+
+.btn {
+  float: right;
+  position: fixed;
+}
