@@ -24,6 +24,7 @@ function makeApp(mongoClient) {
     autoescape: true,
     express: app,
   });
+  app.use(bodyParser.urlencoded({ extended: false }));
 
   app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -85,22 +86,49 @@ function makeApp(mongoClient) {
   app.get("/locations", async (req, res) => {
     const annonces = await db.collection("Annonces").find().toArray();
     // res.json(annonce);
-      // res.render("pages/location");
-      res.render("pages/location", {annonces});
+    // res.render("pages/location");
+    res.render("pages/location", { annonces });
   });
 
   app.get("/locations/:location_id", async (req, res) => {
     const locationId = req.params.location_id;
-    const annonce = await db.collection("Annonces").findOne({"_id.$oid":locationId}.toArray);
+    const annonce = await db.collection("Annonces").findOne({ "_id.$oid": locationId }.toArray);
     console.log(annonce)
-    res.render("pages/locationid",{annonce, locationId});
-  }); 
-// PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
+    res.render("pages/locationid", { annonce, locationId });
+  });
+  // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
 
 
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
+  app.post("/api/sendMail", async (req, res) => {
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "tempoffice.contact@gmail.com",
+        pass: process.env.PASSWORD_MAIL,
+      }
+    });
+
+    const mailOptions = {
+      from: "tempoffice.contact@gmail.com",
+      to: "fmariama219@gmail.com",
+      subject: "Sending Email using Node.js",
+      text: "That was easy!"
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        // console.log(error);
+        res.json("ereur")
+      } else {
+        // console.log("Email sent: " + info.response);
+        res.json("good")
+      }
+    });
+    // res.send("bonjour")
+  })
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", async (req, res) => {
@@ -160,9 +188,31 @@ function makeApp(mongoClient) {
     db.collection("Annonces").insertOne(annonce);
     res.end('');
   });
-// POUR L'INSTANT IL REDIRIGE VERS HOME 
-// PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
+  // POUR L'INSTANT IL REDIRIGE VERS HOME 
+  // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
 
+  app.post("/locations", async (req, res) => {
+    const dataForm = req.body;
+    const annonce = {
+      titre: dataForm.titre,
+      description: dataForm.description,
+      prix: dataForm.prix,
+      taille: dataForm.taille,
+      datedebut: dataForm.datedebut,
+      datefin: dataForm.datefin,
+      adresse: dataForm.adresse,
+      ville: dataForm.ville,
+      filename: dataForm.filename,
+      mobilier: dataForm.mobilier,
+      checked: dataForm.checked,
+      description: dataForm.description
+    }
+    // console.log("DATAFORM", dataForm);
+    db.collection("Annonces").insertOne({ annonce })
+
+    res.render("pages/location");
+  });
+  app.get("/locations")
   //
 
   app.get("/api/login", async (req, res) => {
@@ -181,5 +231,8 @@ function makeApp(mongoClient) {
 
   return app;
 }
+
+
+
 
 module.exports = { makeApp };
