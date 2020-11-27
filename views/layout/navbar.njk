@@ -20,26 +20,14 @@
       <li>
         <div class="d-flex justify-content-end">
 
-          <a href="/locations">
-            <button type="submit" class="btn btn-warning">
-              Nos locations
-            </button>
-          </a>
-
-          <a href="/api/creation_annonce">
-            <button type="submit" class="btn btn-secondary">Proposer ma salle</button>
-          </a>"
-
-          {% if isLoggedIn%}
-            <a href="/api/logout">
-              <button type="submit" class="btn btn-danger">logout</button>
-            </a>
-          {% else %}
-            <a href="/api/login">
-              <button type="submit" class="btn btn-primary">login</button>
-            </a>
-
-          {% endif %}
+            <a href="/locations" 
+               <button type="button" class="btn btn-warning" type="submit"> Je propose ma salle </button></a>
+            <a href="" 
+               <button type="button" class="btn btn-warning" type="submit"> Nos locations </button></a>
+                <p class="confirm_Mail">
+                  <a class="btn btn-outline-secondary " href="/api/sendMail" role="button" > message </a>
+                </p>
+            <a href={{ login_url }}> <button type="button" class="btn btn-secondary" type="submit">Login</button></a>
         </div>
       </li>
     </ul>
