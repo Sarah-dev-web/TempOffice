@@ -23,6 +23,7 @@ function makeApp(mongoClient) {
     autoescape: true,
     express: app,
   });
+  app.use(bodyParser.urlencoded({ extended: false }));
 
   app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -82,15 +83,52 @@ function makeApp(mongoClient) {
   });
 
   app.get("/locations", async (req, res) => {
-    res.render("pages/location");
+    const annonces = await db.collection("Annonces").find().toArray();
+    // res.json(annonce);
+    // res.render("pages/location");
+    res.render("pages/location", { annonces });
   });
 
   app.get("/locations/:location_id", async (req, res) => {
-    res.render("pages/locationid");
+    const locationId = req.params.location_id;
+    const annonce = await db.collection("Annonces").findOne({ "_id.$oid": locationId }.toArray);
+    console.log(annonce)
+    res.render("pages/locationid", { annonce, locationId });
   });
+  // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
+
+
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
+
+  app.get("/api/sendMail", async (req, res) => {
+
+    const transporter = nodemailer.createTransport({
+      service: process.env.GMAIL_SERVICE_NAME,
+      host: process.env.GMAIL_SERVICE_HOST,
+      secure: process.env.GMAIL_SERVICE_SECURE,
+      port: process.env.GMAIL_SERVICE_PORT,
+      auth: {
+        user: process.env.GMAIL_USER_NAME,
+        pass: process.env.GMAIL_USER_PASSWORD,
+      },
+    });
+
+    const mailOptions = {
+      from: "tempoffice.contact@gmail.com",
+      to: "fmariama219@gmail.com",
+      subject: "Sending Email using Node.js",
+      text: "That was easy!"
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        res.json(error)
+      }
+      res.redirect("/")
+    });
+  })
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", async (req, res) => {
@@ -108,6 +146,13 @@ function makeApp(mongoClient) {
 
     const authURLinString = authURL.toString();
     res.redirect(authURLinString);
+  });
+
+  app.get("/profil", async (req, res) => {
+    const users = await db.collection("Users").find().toArray();
+    // res.json(annonce);
+      // res.render("pages/location");
+      res.render("pages/profil", {users});
   });
 
   app.get("/api/logout", sessionParser, async (req, res) => {
@@ -185,8 +230,51 @@ function makeApp(mongoClient) {
       mobilier: dataForm.mobilier,
       description: dataForm.description,
     };
-    db.collection("Annonces").insertOne(annonce);
-    res.end("");
+
+    const result = await db.collection("Annonces").insertOne(annonce);
+    const createdId = result.insertedId;
+
+//     var cookieSession = require('cookie-session');
+//     app.use(cookieSession({
+//     keys: ['secret1', 'secret2']
+// }));
+
+    console.log(createdId)
+
+
+
+
+    res.end('');
+  });
+  // POUR L'INSTANT IL REDIRIGE VERS HOME 
+  // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
+
+  app.post("/locations", async (req, res) => {
+    const dataForm = req.body;
+    const annonce = {
+      titre: dataForm.titre,
+      description: dataForm.description,
+      prix: dataForm.prix,
+      taille: dataForm.taille,
+      datedebut: dataForm.datedebut,
+      datefin: dataForm.datefin,
+      adresse: dataForm.adresse,
+      ville: dataForm.ville,
+      filename: dataForm.filename,
+      mobilier: dataForm.mobilier,
+      checked: dataForm.checked,
+      description: dataForm.description
+    }
+    // console.log("DATAFORM", dataForm);
+    db.collection("Annonces").insertOne({ annonce })
+
+    res.render("pages/location");
+  });
+  app.get("/locations")
+  //
+
+  app.get("/api/login", async (req, res) => {
+    res.send("result");
   });
 
   app.post("/api/login", async (req, res) => {
@@ -201,5 +289,8 @@ function makeApp(mongoClient) {
 
   return app;
 }
+
+
+
 
 module.exports = { makeApp };
