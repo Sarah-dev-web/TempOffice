@@ -7,7 +7,7 @@ const OAuth2Client = require("@fwl/oauth2");
 const mongoSession = require("connect-mongo");
 const session = require("express-session");
 const MongoClient = require("mongodb");
-const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer");
 
 const clientWantsJson = (request) =>
   request.get("accept") === "application/json";
@@ -63,7 +63,7 @@ function makeApp(mongoClient) {
   const oauthClient = new OAuth2Client.default(oauthClientConstructor);
 
   app.get("/", sessionParser, async (req, res) => {
-    
+
     if (!req.session || !req.session.accessToken) {
       res.render("pages/home", { isLoggedIn: false });
       console.log("you are not conected");
@@ -110,14 +110,14 @@ function makeApp(mongoClient) {
       });
     }
   });
-    // res.render("pages/location", { annonces });
+  // res.render("pages/location", { annonces });
   // });
 
-  app.get("/locations/:location_id",sessionParser, async (req, res) => {
+  app.get("/locations/:location_id", sessionParser, async (req, res) => {
     const locationId = req.params.location_id;
     const annonce = await db
-    .collection("Annonces")
-    .findOne({ _id: MongoClient.ObjectId(locationId) });
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(locationId) });
     if (!req.session || !req.session.accessToken) {
       res.render("pages/locationid", { annonce, locationId, isLoggedIn: false });
       console.log("you are not conected");
@@ -137,7 +137,7 @@ function makeApp(mongoClient) {
       });
     }
   });
-    // res.render("pages/locationid", { annonce, locationId });
+  // res.render("pages/locationid", { annonce, locationId });
   // });
   // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
 
@@ -196,11 +196,11 @@ function makeApp(mongoClient) {
       });
     }
   });
-    
-    
-    
-    // res.render("pages/FormCreatAnn");
-  
+
+
+
+  // res.render("pages/FormCreatAnn");
+
 
   //  création de l'annonce par le vendeur (
   // app.post("/api/creation_annonce", async (req, res) => { });
@@ -236,7 +236,7 @@ function makeApp(mongoClient) {
       });
     }
   });
-    // res.render("pages/profil", { users });
+  // res.render("pages/profil", { users });
 
 
   app.get("/api/logout", sessionParser, async (req, res) => {
@@ -309,7 +309,7 @@ function makeApp(mongoClient) {
     res.redirect("/");
   });
 
-  app.post("/api/creation_annonce",sessionParser, async (req, res) => {
+  app.post("/api/creation_annonce", sessionParser, async (req, res) => {
     const dataForm = req.body;
     const annonce = {
       titre: dataForm.titre,
@@ -330,7 +330,7 @@ function makeApp(mongoClient) {
 
     const logguedUserEmail = req.session.mail;
     // const user = await db.collection("users").findOne({mail:logguedUserEmail});
-    const Id = await db.collection("Users").updateOne({mail:logguedUserEmail}, { $push: {annonce_vendeur: createdId}});
+    const Id = await db.collection("Users").updateOne({ mail: logguedUserEmail }, { $push: { annonce_vendeur: createdId } });
 
     console.log(Id)
 
@@ -341,14 +341,14 @@ function makeApp(mongoClient) {
     // trouver dans mongodb comment patch un tableau de donnee
     // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
 
-  
+
     res.redirect("/");
     // });
 
-//     var cookieSession = require('cookie-session');
-//     app.use(cookieSession({
-//     keys: ['secret1', 'secret2']
-// }));
+    //     var cookieSession = require('cookie-session');
+    //     app.use(cookieSession({
+    //     keys: ['secret1', 'secret2']
+    // }));
 
     console.log(createdId)
 
