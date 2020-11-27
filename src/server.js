@@ -8,7 +8,6 @@ const mongoSession = require("connect-mongo");
 const session = require("express-session");
 const MongoClient = require("mongodb");
 
-
 const clientWantsJson = (request) =>
   request.get("accept") === "application/json";
 
@@ -28,7 +27,7 @@ function makeApp(mongoClient) {
 
   app.use(bodyParser.urlencoded({ extended: false }));
 
-  app.use(bodyParser.json())
+  app.use(bodyParser.json());
 
   app.set("view engine", "njk");
 
@@ -170,14 +169,52 @@ function makeApp(mongoClient) {
       stringiAuthCode
     );
     console.log(token);
-    if (req.session) {
+
+    //code qui permet de décoder le token
+    const [header, payload] = token.id_token.split(".");
+
+    const decodedHeader = OAuth2Client.decodeJWTPart(header);
+    const decodedPayload = OAuth2Client.decodeJWTPart(payload);
+
+    // récupère l'email du token
+    const dataEmailUser = decodedPayload.email;
+    //console.log("email du token :" + dataEmailUser);
+
+    // récupère l'email dans la BD dont la valeur est égale à celle de l'email du token
+    const dataEmailBd = await db
+      .collection("Users")
+      .findOne({ Mail: { dataEmailUser } }.toArray);
+
+    // console.log("email de la db", dataEmailBd);
+    const dataEmailBdUser = dataEmailBd.Mail;
+    //console.log("email bd user ", dataEmailBdUser);
+
+    // si email est déjà enregistré dans la DB, l'user reste connecté, sinon on l'invite à créer un compte
+    if (dataEmailUser === dataEmailBdUser && req.session) {
       req.session.accessToken = token.access_token;
+      console.log("vous restez connecté");
     } else {
-      console.log("warning, couldn't put the tokens in session");
+      // récupération des données du token de l'user pour les enregistrer dans la base de données
+      const dataNewUser = decodedPayload;
+      console.log("données du NewUser", dataNewUser);
+
+      const insertedData = {
+        mail: dataNewUser.email,
+        annonce_vendeur: [],
+        annonce_acheteur: [],
+        data_fewlines: dataNewUser,
+      };
+      const ajoutDataNewUser = await db
+        .collection("Users")
+        .insertOne(insertedData);
+      console.log("ajout données dans BD", ajoutDataNewUser);
+
+      console.log(
+        "warning, couldn't put the tokens in session, vous devez créer un compte"
+      );
     }
     res.redirect("/");
   });
-
 
   app.post("/api/creation_annonce", async (req, res) => {
     const dataForm = req.body;
@@ -193,6 +230,7 @@ function makeApp(mongoClient) {
       mobilier: dataForm.mobilier,
       description: dataForm.description,
     };
+
     const result = await db.collection("Annonces").insertOne(annonce);
     const createdId = result.insertedId;
 
