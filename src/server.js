@@ -114,6 +114,13 @@ function makeApp(mongoClient) {
     res.redirect(authURLinString);
   });
 
+  app.get("/profil", async (req, res) => {
+    const users = await db.collection("Users").find().toArray();
+    // res.json(annonce);
+      // res.render("pages/location");
+      res.render("pages/profil", {users});
+  });
+
   app.get("/api/logout", sessionParser, async (req, res) => {
     if (req.session) {
       req.session.destroy(() => {
@@ -151,7 +158,19 @@ function makeApp(mongoClient) {
       mobilier: dataForm.mobilier,
       description: dataForm.description,
     };
-    db.collection("Annonces").insertOne(annonce);
+    const result = await db.collection("Annonces").insertOne(annonce);
+    const createdId = result.insertedId;
+
+//     var cookieSession = require('cookie-session');
+//     app.use(cookieSession({
+//     keys: ['secret1', 'secret2']
+// }));
+
+    console.log(createdId)
+
+
+
+
     res.end('');
   });
 // POUR L'INSTANT IL REDIRIGE VERS HOME 
