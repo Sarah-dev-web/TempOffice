@@ -34,13 +34,18 @@ function makeApp(db) {
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
-  app.post("/api/sendMail", async (req, res) => {
+
+  app.get("/api/sendMail", async (req, res) => {
+
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      service: process.env.GMAIL_SERVICE_NAME,
+      host: process.env.GMAIL_SERVICE_HOST,
+      secure: process.env.GMAIL_SERVICE_SECURE,
+      port: process.env.GMAIL_SERVICE_PORT,
       auth: {
-        user: "tempoffice.contact@gmail.com",
-        pass: process.env.PASSWORD_MAIL,
-      }
+        user: process.env.GMAIL_USER_NAME,
+        pass: process.env.GMAIL_USER_PASSWORD,
+      },
     });
 
     const mailOptions = {
@@ -52,14 +57,10 @@ function makeApp(db) {
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        // console.log(error);
-        res.json("ereur")
-      } else {
-        // console.log("Email sent: " + info.response);
-        res.json("good")
+        res.json(error)
       }
+      res.redirect("/")
     });
-    // res.send("bonjour")
   })
 
   //  annonce qui se retrouve sur la page la location (
