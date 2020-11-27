@@ -5,24 +5,22 @@
 {% endblock %}
 
 {% block content %}
-  <div class="mot">
-      <div class="jumbotron">
-      <img class="card-img-top" src="static/images/Jumbo.jpg" alt="Card image cap">
-  <h1 class="display-4">Bienvenue</h1>
-  <p class="lead">Vos prochaines réunions ou vous voulez</p>
-  <hr class="my-4">
-  <p>les salles disponibles</p>
-  <p class="lead">
+<div class="jumbotron jumbotron-fluid">
+  <div class="container">
+    <h1 class="display-4">Vos prochaines réunions ou vous voulez</h1>
+       <p class="lead">trouvez ou proposez votre salle de réunion</p>
+          <img class="card-img-top" src="static/images/6.png" alt="Card image cap">
+        <p class="lead">
     <a class="btn btn-primary btn-lg" href="/locations" role="button" > découvrir nos biens</a>
   </p>
-</div> 
 <div class="card-deck">
   <div class="card">
-    <img class="card-img-top" src="static/images/1.jpg" alt="Card image cap">
-    <div class="card-body">
-      <h5 class="card-title">Card title</h5>
-      <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-    </div>
+    <img class="card-img-top" src="static/images/SalleStreetHawk.png" alt="Card image cap">
+      <div class="card-body">
+    <h5 class="card-title">Card title</h5>
+  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
+</div>
+  
     <div class="card-footer">
       <a href="/locations/:location_id"  class="btn btn-primary btn-lg btn-block" role="button"> Louez moi  </a>
       
@@ -46,7 +44,6 @@
     </div>
     <div class="card-footer">
       <a href="/locations/:location_id"  class="btn btn-primary btn-lg btn-block" role="button"> Louez moi  </a>
-      
     </div>
   </div>
 </div>  

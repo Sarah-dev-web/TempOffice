@@ -1,3 +1,14 @@
 .title {
   font-family: "Rubik Mono One", sans-serif;
 }
+
+.navbar-toggler {
+  /* Couleur de fond de la barre de navigation */
+  background-color: #F8F8F8;
+  border-color: #bdab0e;
+}
+
+.btn {
+  float: right;
+  position: fixed;
+}

@@ -1,3 +1,11 @@
+.jumbotron {
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+  background-color: #FFFFFF;
+  border-radius: .3rem;
+  background:transparent;
+ }
+
 .body {
   background-image: url(/assets/images/retro-bg.jpg);
   background-size: cover !important;
@@ -21,10 +29,21 @@
   justify-content: center;
 }
 
+
+
 footer {
   padding: 1rem !important;
   background-color: #141414 !important;
   color: white !important;
   width: 100%;
   text-align: center;
+}
+
+.card-columns {
+  @include media-breakpoint-only(lg) {
+    column-count: 4;
+  }
+  /* @include media-breakpoint-only(xl) {
+    column-count: 5;
+  } */
 }
