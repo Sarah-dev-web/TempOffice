@@ -87,7 +87,7 @@ function makeApp(mongoClient) {
   });
 
   app.get("/locations/:location_id", async (req, res) => {
-    res.render("pages/locationid");
+    res.render("pages/location_id");
   });
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
