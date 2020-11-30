@@ -84,11 +84,32 @@ function makeApp(mongoClient) {
   });
 
   app.get("/locations", async (req, res) => {
+
+
     const annonces = await db.collection("Annonces").find().toArray();
     // res.json(annonce);
     // res.render("pages/location");
-    res.render("pages/location", { annonces });
+    if (!req.session || !req.session.accessToken) {
+      res.render("pages/location", { annonces, isLoggedIn: false });
+      console.log("you are not conected");
+      return;
+    }
+    try {
+      await oauthClient.verifyJWT(
+        req.session.accessToken,
+        process.env.JWT_ALGORITHM || ""
+      );
+      console.log("you are conected");
+      res.render("pages/location", { annonces, isLoggedIn: true });
+    } catch (error) {
+      req.session.destroy(() => {
+        res.render("pages/location", { annonces, isLoggedIn: false });
+        console.error(error);
+      });
+    }
   });
+    // res.render("pages/location", { annonces });
+  // });
 
   app.get("/locations/:location_id", async (req, res) => {
     const locationId = req.params.location_id;
@@ -96,11 +117,31 @@ function makeApp(mongoClient) {
       .collection("Annonces")
       .findOne({ "_id.$oid": locationId }.toArray);
     console.log(annonce);
-    res.render("pages/locationid", { annonce, locationId });
+    if (!req.session || !req.session.accessToken) {
+      res.render("pages/locationid", { annonce, locationId, isLoggedIn: false });
+      console.log("you are not conected");
+      return;
+    }
+    try {
+      await oauthClient.verifyJWT(
+        req.session.accessToken,
+        process.env.JWT_ALGORITHM || ""
+      );
+      console.log("you are conected");
+      res.render("pages/locationid", { annonce, locationId, isLoggedIn: true });
+    } catch (error) {
+      req.session.destroy(() => {
+        res.render("pages/locationid", { annonce, locationId, isLoggedIn: false });
+        console.error(error);
+      });
+    }
   });
+    // res.render("pages/locationid", { annonce, locationId });
+  // });
   // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
 
   app.post("/locations/:location_id", async (req, res) => {
+
     res.send("la location 1 POST");
   });
 
@@ -135,12 +176,30 @@ function makeApp(mongoClient) {
   app.get("/api/creation_annonce", sessionParser, async (req, res) => {
 
     console.log(req.session.mail)
-    
-    // const result = " veuillez vous logger";
-    // await db.collection("").findOne;
-    // console.log(result);
-    res.render("pages/FormCreatAnn");
+    if (!req.session || !req.session.accessToken) {
+      res.render("pages/FormCreatAnn", { isLoggedIn: false });
+      console.log("you are not conected");
+      return;
+    }
+    try {
+      await oauthClient.verifyJWT(
+        req.session.accessToken,
+        process.env.JWT_ALGORITHM || ""
+      );
+      console.log("you are conected");
+      res.render("pages/FormCreatAnn", { isLoggedIn: true });
+    } catch (error) {
+      req.session.destroy(() => {
+        res.render("pages/FormCreatAnn", { isLoggedIn: false });
+        console.error(error);
+      });
+    }
   });
+    
+    
+    
+    // res.render("pages/FormCreatAnn");
+  
 
   //  création de l'annonce par le vendeur (
   // app.post("/api/creation_annonce", async (req, res) => { });
@@ -156,8 +215,28 @@ function makeApp(mongoClient) {
     const users = await db.collection("Users").find().toArray();
     // res.json(annonce);
     // res.render("pages/location");
-    res.render("pages/profil", { users });
+
+    if (!req.session || !req.session.accessToken) {
+      res.render("pages/profil", { users, isLoggedIn: false });
+      console.log("you are not conected");
+      return;
+    }
+    try {
+      await oauthClient.verifyJWT(
+        req.session.accessToken,
+        process.env.JWT_ALGORITHM || ""
+      );
+      console.log("you are conected");
+      res.render("pages/profil", { users, isLoggedIn: true });
+    } catch (error) {
+      req.session.destroy(() => {
+        res.render("pages/profil", { users, isLoggedIn: false });
+        console.error(error);
+      });
+    }
   });
+    // res.render("pages/profil", { users });
+
 
   app.get("/api/logout", sessionParser, async (req, res) => {
     if (req.session) {
@@ -300,7 +379,6 @@ function makeApp(mongoClient) {
 
     res.render("pages/location");
   });
-  app.get("/locations");
   //
 
   app.get("/api/login", async (req, res) => {
