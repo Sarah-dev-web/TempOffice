@@ -92,8 +92,10 @@ function makeApp(mongoClient) {
 
   app.get("/locations/:location_id", async (req, res) => {
     const locationId = req.params.location_id;
-    const annonce = await db.collection("Annonces").findOne({ "_id.$oid": locationId }.toArray);
-    console.log(annonce)
+    // const annonce = await db.collection("Annonces").findOne({ "_id.$oid": locationId }.toArray);
+    const annonce = await db
+    .collection("Annonces")
+    .findOne({ _id: MongoClient.ObjectId(locationId) });
     res.render("pages/locationid", { annonce, locationId });
   });
   // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
