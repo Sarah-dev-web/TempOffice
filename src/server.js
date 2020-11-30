@@ -132,7 +132,10 @@ function makeApp(mongoClient) {
   });
 
   //  annonce qui se retrouve sur la page la location (
-  app.get("/api/creation_annonce", async (req, res) => {
+  app.get("/api/creation_annonce", sessionParser, async (req, res) => {
+
+    console.log(req.session.mail)
+    
     // const result = " veuillez vous logger";
     // await db.collection("").findOne;
     // console.log(result);
@@ -226,7 +229,7 @@ function makeApp(mongoClient) {
     res.redirect("/");
   });
 
-  app.post("/api/creation_annonce", async (req, res) => {
+  app.post("/api/creation_annonce",sessionParser, async (req, res) => {
     const dataForm = req.body;
     const annonce = {
       titre: dataForm.titre,
@@ -244,10 +247,30 @@ function makeApp(mongoClient) {
     const result = await db.collection("Annonces").insertOne(annonce);
     const createdId = result.insertedId;
 
-    //     var cookieSession = require('cookie-session');
-    //     app.use(cookieSession({
-    //     keys: ['secret1', 'secret2']
-    // }));
+
+    const logguedUserEmail = req.session.mail;
+    // const user = await db.collection("users").findOne({mail:logguedUserEmail});
+    const Id = await db.collection("Users").updateOne({mail:logguedUserEmail}, { $push: {annonce_vendeur: createdId}});
+
+    console.log(Id)
+
+    // trouver le user dans la collection Users
+
+    console.log("j'ai reussi");
+
+    // trouver dans mongodb comment patch un tableau de donnee
+    // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
+
+  
+    res.redirect("/");
+    // });
+
+//     var cookieSession = require('cookie-session');
+//     app.use(cookieSession({
+//     keys: ['secret1', 'secret2']
+// }));
+
+    console.log(createdId)
 
     console.log(createdId);
 
