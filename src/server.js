@@ -205,8 +205,6 @@ function makeApp(mongoClient) {
       req.session.accessToken = token.access_token;
       req.session.mail = dataEmailUser;
     } else if (dataEmailBd === null) {
-      //
-      //
       const dataNewUser = decodedPayload;
 
       const insertdData = {
