@@ -4,6 +4,10 @@
 {% block content %}
 <body>
   <form method="POST" action="/api/creation_annonce">
+  <div class="form-group">
+      <label for="usr"> Email: </label>
+      <input type="email" class="form-control" name="email" id="inputemail" >
+    </div>
     <div class="form-group">
       <label for="usr">Titre : </label>
       <input type="text" class="form-control" name="titre" id="inputtitre" >
@@ -54,7 +58,7 @@
     <div class="container">
     <p>Description</p>
       <textarea class="form-control" rows="5" id="description" name="description"></textarea>
-      <button type="submit" class="btn btn-primary">Add</button> 
+      <button type="submit" class="btn btn-primary"> Add </button> 
       </div>
     </body>
   </form>

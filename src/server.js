@@ -103,7 +103,7 @@ function makeApp(mongoClient) {
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
-
+  //message d'information sur ajout un bureau 
   app.get("/api/sendMail", async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
@@ -118,18 +118,72 @@ function makeApp(mongoClient) {
 
     const mailOptions = {
       from: "tempoffice.contact@gmail.com",
-      to: "fmariama219@gmail.com",
+      to: "damien.skrzypczak@gmail.com",
       subject: "Sending Email using Node.js",
       text: "That was easy!",
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
+    await transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.json(error);
       }
       res.redirect("/");
     });
   });
+
+  // creation de l'envoi d'un mail pour à l'acheteur pour la location 
+  app.get("/api/sendMailAch", async (req, res) => {
+
+
+    const transporter = nodemailer.createTransport({
+      service: process.env.GMAIL_SERVICE_NAME,
+      host: process.env.GMAIL_SERVICE_HOST,
+      secure: process.env.GMAIL_SERVICE_SECURE,
+      port: process.env.GMAIL_SERVICE_PORT,
+      auth: {
+        user: process.env.GMAIL_USER_NAME,
+        pass: process.env.GMAIL_USER_PASSWORD,
+      },
+    });
+
+    const mailOptionsAttente = {
+      from: "tempoffice.contact@gmail.com",
+      to: "fmariama219@gmail.com",
+      subject: "Sending Email using Node.js",
+      text: "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur "
+    };
+
+    const mailOptionsConfirmation = {
+      from: "tempoffice.contact@gmail.com",
+      to: "damien.skrzypczak@gmail.com",
+      subject: "Sending Email using Node.js",
+      text: "Veuillez confirmer la demande de location. "
+    };
+
+    const resultatAttente = await transporter.sendMail(mailOptionsAttente, function (error, info) {
+      if (error) {
+        return "erreur"
+      } else {
+        return "Mail bien envoyé"
+      }
+    });
+
+    const resultatConfirmation = await transporter.sendMail(mailOptionsConfirmation, function (error, info) {
+      if (error) {
+        return "erreur"
+      } else {
+        return "Mail bien envoyé"
+      }
+    });
+
+    console.log(resultatAttente, resultatConfirmation)
+
+    if (resultatAttente === "erreur" || resultatConfirmation === "erreur") {
+      res.json({ message: "Erreur dans l'un des mails", resultatAttente, resultatConfirmation })
+    }
+
+    res.redirect("/")
+  })
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", async (req, res) => {
@@ -235,6 +289,7 @@ function makeApp(mongoClient) {
   app.post("/api/creation_annonce", async (req, res) => {
     const dataForm = req.body;
     const annonce = {
+      email: dataForm.email,
       titre: dataForm.titre,
       prix: dataForm.prix,
       taille: dataForm.taille,
@@ -248,16 +303,16 @@ function makeApp(mongoClient) {
     };
 
     const result = await db.collection("Annonces").insertOne(annonce);
-    const createdId = result.insertedId;
+    // const createdId = result.insertedId;
 
-    //     var cookieSession = require('cookie-session');
-    //     app.use(cookieSession({
-    //     keys: ['secret1', 'secret2']
-    // }));
+    // //     var cookieSession = require('cookie-session');
+    // //     app.use(cookieSession({
+    // //     keys: ['secret1', 'secret2']
+    // // }));
 
-    console.log(createdId);
-
-    res.end("");
+    // console.log(createdId)
+    // console.log(result)
+    res.redirect("/");
   });
   // POUR L'INSTANT IL REDIRIGE VERS HOME
   // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
@@ -286,6 +341,8 @@ function makeApp(mongoClient) {
   app.get("/locations");
   //
 
+
+  //
   app.get("/api/login", async (req, res) => {
     res.send("result");
   });
