@@ -182,7 +182,7 @@ function makeApp(mongoClient) {
 
     // rechercher si  l'email est déjà enregistré dans la bd
 
-    // récupère l'email dans la BD dont la valeur est égale à celle de l'email du token
+    // on recherche dans la db si le mail y est déjà enregistré
 
     const dataEmailBd = await db
       .collection("Users")
@@ -190,12 +190,10 @@ function makeApp(mongoClient) {
 
     console.log("email de la db", dataEmailBd);
 
-    //# sélectionner les documents comportant un champ particulier
-    // const mailDb = await db.users.find({ Mail: { $exists: true } });
-    // console.log("champ mail présent dans la db", mailDb);
-
+    // on déclare une variable dont la valeur est vide
     let dataEmailBdUser = "";
 
+    // si le champ email de la bd n'est pas vide, alors l'email de l'user est déjà enregistré dans la bd
     if (dataEmailBd !== null) {
       dataEmailBdUser = dataEmailBd.mail;
       console.log("email bd user ", dataEmailBdUser);
@@ -205,7 +203,7 @@ function makeApp(mongoClient) {
     if (dataEmailUser === dataEmailBdUser && req.session) {
       req.session.accessToken = token.access_token;
       req.session.mail = dataEmailUser;
-    } else {
+    } else if (dataEmailBd === null) {
       //
       //
       const dataNewUser = decodedPayload;
@@ -224,9 +222,7 @@ function makeApp(mongoClient) {
       req.session.accessToken = token.access_token;
       req.session.mail = dataEmailUser;
 
-      //console.log(
-      // "warning, couldn't put the tokens in session, vous devez créer un compte"
-      //);
+      // exécuter insertOne que si l'email n'est pas enregistré dans la BD
     }
     res.redirect("/");
   });
