@@ -1,36 +1,38 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
   
-   <div >
+   
   
-      <a class="navbar-brand title" href="/">TempOffice</a>
+      <a class="navbar-brand title mr-auto" href="/">TempOffice</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
    
-   </div>      
+       
 
-   <div>  
+    <div class="navbar-brand mr-auto ml-auto">
         <form class="form-inline " >
           <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
+    </div>
   
-  </div>
     
   
-  
-   
-    <div class="d-flex justify-content-end">
+  <div class="mx-auto order-0">
+    <div class="navbar-nav  mr-auto justify-content-end">
           <a href="/locations">
             <button type="submit" class="btn btn-warning">
               Nos locations
             </button>
           </a>
-              <div>
-                <a href="/"  class="btn btn-secondary btn-block" role="button"> message </a>
-              </div>
+              
+          <a href="/" > 
+          <button type="submit" class="btn btn-danger" > message 
+          </button>
+          </a>
+             
           <a href="/api/creation_annonce">
-            <button type="submit" class="btn btn-secondary">Proposer ma salle</button>
+            <button type="submit" class="btn btn-success">Proposer ma salle</button>
           </a>
          
           {% if isLoggedIn%}
@@ -44,13 +46,5 @@
 
           {% endif %}
     </div>
-  
-   
- 
-       
-
-   
-  
-
-  
+  </div>  
 </nav>
