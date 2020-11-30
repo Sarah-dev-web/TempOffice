@@ -91,19 +91,19 @@ function makeApp(mongoClient) {
 
   app.get("/locations/:location_id", async (req, res) => {
     const locationId = req.params.location_id;
-    const annonce = await db.collection("Annonces").findOne({ "_id.$oid": locationId }.toArray);
-    console.log(annonce)
+    const annonce = await db
+      .collection("Annonces")
+      .findOne({ "_id.$oid": locationId }.toArray);
+    console.log(annonce);
     res.render("pages/locationid", { annonce, locationId });
   });
   // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
-
 
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
 
   app.get("/api/sendMail", async (req, res) => {
-
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
       host: process.env.GMAIL_SERVICE_HOST,
@@ -119,16 +119,16 @@ function makeApp(mongoClient) {
       from: "tempoffice.contact@gmail.com",
       to: "fmariama219@gmail.com",
       subject: "Sending Email using Node.js",
-      text: "That was easy!"
+      text: "That was easy!",
     };
 
     transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
-        res.json(error)
+        res.json(error);
       }
-      res.redirect("/")
+      res.redirect("/");
     });
-  })
+  });
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", async (req, res) => {
@@ -151,8 +151,8 @@ function makeApp(mongoClient) {
   app.get("/profil", async (req, res) => {
     const users = await db.collection("Users").find().toArray();
     // res.json(annonce);
-      // res.render("pages/location");
-      res.render("pages/profil", {users});
+    // res.render("pages/location");
+    res.render("pages/profil", { users });
   });
 
   app.get("/api/logout", sessionParser, async (req, res) => {
@@ -178,40 +178,55 @@ function makeApp(mongoClient) {
 
     // récupère l'email du token
     const dataEmailUser = decodedPayload.email;
-    //console.log("email du token :" + dataEmailUser);
+    console.log("email du token :" + dataEmailUser);
+
+    // rechercher si  l'email est déjà enregistré dans la bd
 
     // récupère l'email dans la BD dont la valeur est égale à celle de l'email du token
+
     const dataEmailBd = await db
       .collection("Users")
-      .findOne({ Mail: { dataEmailUser } }.toArray);
+      .findOne({ mail: dataEmailUser });
 
-    // console.log("email de la db", dataEmailBd);
-    const dataEmailBdUser = dataEmailBd.Mail;
-    //console.log("email bd user ", dataEmailBdUser);
+    console.log("email de la db", dataEmailBd);
 
-    // si email est déjà enregistré dans la DB, l'user reste connecté, sinon on l'invite à créer un compte
+    //# sélectionner les documents comportant un champ particulier
+    // const mailDb = await db.users.find({ Mail: { $exists: true } });
+    // console.log("champ mail présent dans la db", mailDb);
+
+    let dataEmailBdUser = "";
+
+    if (dataEmailBd !== null) {
+      dataEmailBdUser = dataEmailBd.mail;
+      console.log("email bd user ", dataEmailBdUser);
+    }
+
+    // si le compte existe déjà, on crée le cookie en mémorisant le mail
     if (dataEmailUser === dataEmailBdUser && req.session) {
       req.session.accessToken = token.access_token;
-      console.log("vous restez connecté");
+      req.session.mail = dataEmailUser;
     } else {
-      // récupération des données du token de l'user pour les enregistrer dans la base de données
+      //
+      //
       const dataNewUser = decodedPayload;
-      console.log("données du NewUser", dataNewUser);
 
-      const insertedData = {
+      const insertdData = {
         mail: dataNewUser.email,
         annonce_vendeur: [],
         annonce_acheteur: [],
         data_fewlines: dataNewUser,
       };
+
       const ajoutDataNewUser = await db
         .collection("Users")
-        .insertOne(insertedData);
-      console.log("ajout données dans BD", ajoutDataNewUser);
+        .insertOne(insertdData);
 
-      console.log(
-        "warning, couldn't put the tokens in session, vous devez créer un compte"
-      );
+      req.session.accessToken = token.access_token;
+      req.session.mail = dataEmailUser;
+
+      //console.log(
+      // "warning, couldn't put the tokens in session, vous devez créer un compte"
+      //);
     }
     res.redirect("/");
   });
@@ -234,19 +249,16 @@ function makeApp(mongoClient) {
     const result = await db.collection("Annonces").insertOne(annonce);
     const createdId = result.insertedId;
 
-//     var cookieSession = require('cookie-session');
-//     app.use(cookieSession({
-//     keys: ['secret1', 'secret2']
-// }));
+    //     var cookieSession = require('cookie-session');
+    //     app.use(cookieSession({
+    //     keys: ['secret1', 'secret2']
+    // }));
 
-    console.log(createdId)
+    console.log(createdId);
 
-
-
-
-    res.end('');
+    res.end("");
   });
-  // POUR L'INSTANT IL REDIRIGE VERS HOME 
+  // POUR L'INSTANT IL REDIRIGE VERS HOME
   // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
 
   app.post("/locations", async (req, res) => {
@@ -263,14 +275,14 @@ function makeApp(mongoClient) {
       filename: dataForm.filename,
       mobilier: dataForm.mobilier,
       checked: dataForm.checked,
-      description: dataForm.description
-    }
+      description: dataForm.description,
+    };
     // console.log("DATAFORM", dataForm);
-    db.collection("Annonces").insertOne({ annonce })
+    db.collection("Annonces").insertOne({ annonce });
 
     res.render("pages/location");
   });
-  app.get("/locations")
+  app.get("/locations");
   //
 
   app.get("/api/login", async (req, res) => {
@@ -289,8 +301,5 @@ function makeApp(mongoClient) {
 
   return app;
 }
-
-
-
 
 module.exports = { makeApp };
