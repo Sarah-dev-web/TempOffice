@@ -408,11 +408,11 @@ function makeApp(mongoClient) {
         { $push: { annonce_vendeur: createdId } }
       );
 
-    console.log(Id);
+    //console.log(Id);
 
     // trouver le user dans la collection Users
 
-    console.log("j'ai reussi");
+    //console.log("j'ai reussi");
 
     // trouver dans mongodb comment patch un tableau de donnee
     // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
