@@ -7,7 +7,7 @@ const OAuth2Client = require("@fwl/oauth2");
 const mongoSession = require("connect-mongo");
 const session = require("express-session");
 const MongoClient = require("mongodb");
-const nodemailer = require("nodemailer")
+const nodemailer = require("nodemailer");
 
 const clientWantsJson = (request) =>
   request.get("accept") === "application/json";
@@ -63,7 +63,6 @@ function makeApp(mongoClient) {
   const oauthClient = new OAuth2Client.default(oauthClientConstructor);
 
   app.get("/", sessionParser, async (req, res) => {
-
     if (!req.session || !req.session.accessToken) {
       res.render("pages/home", { isLoggedIn: false });
       console.log("you are not conected");
@@ -85,8 +84,6 @@ function makeApp(mongoClient) {
   });
 
   app.get("/locations", sessionParser, async (req, res) => {
-
-
     const annonces = await db.collection("Annonces").find().toArray();
     // res.json(annonce);
     // res.render("pages/location");
@@ -119,7 +116,11 @@ function makeApp(mongoClient) {
       .collection("Annonces")
       .findOne({ _id: MongoClient.ObjectId(locationId) });
     if (!req.session || !req.session.accessToken) {
-      res.render("pages/locationid", { annonce, locationId, isLoggedIn: false });
+      res.render("pages/locationid", {
+        annonce,
+        locationId,
+        isLoggedIn: false,
+      });
       console.log("you are not conected");
       return;
     }
@@ -132,7 +133,11 @@ function makeApp(mongoClient) {
       res.render("pages/locationid", { annonce, locationId, isLoggedIn: true });
     } catch (error) {
       req.session.destroy(() => {
-        res.render("pages/locationid", { annonce, locationId, isLoggedIn: false });
+        res.render("pages/locationid", {
+          annonce,
+          locationId,
+          isLoggedIn: false,
+        });
         console.error(error);
       });
     }
@@ -142,10 +147,9 @@ function makeApp(mongoClient) {
   // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
 
   app.post("/locations/:location_id", async (req, res) => {
-
     res.send("la location 1 POST");
   });
-  //message d'information sur ajout d'un bureau 
+  //message d'information sur ajout d'un bureau
   app.get("/api/sendMail", sessionParser, async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
@@ -175,11 +179,15 @@ function makeApp(mongoClient) {
     });
   });
 
-  // creation de l'envoi d'un mail pour à l'acheteur pour la location 
+  // creation de l'envoi d'un mail pour à l'acheteur pour la location
   app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
+<<<<<<< HEAD
 
     // req.params.annonceid
 
+=======
+    req.params.annonceid;
+>>>>>>> f2b797e2ea919189f9ae06f23e17ded0355088a2
 
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
@@ -192,13 +200,18 @@ function makeApp(mongoClient) {
       },
     });
 
+<<<<<<< HEAD
     // console.log("voici ", req.session.mail)
+=======
+    console.log("voici ", req.session.mail);
+>>>>>>> f2b797e2ea919189f9ae06f23e17ded0355088a2
 
     const mailOptionsAttente = {
       from: "tempoffice.contact@gmail.com",
       to: "fmariama219@gmail.com",
       subject: "Sending Email using Node.js",
-      text: "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur "
+      text:
+        "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur ",
     };
 
     // Retrouver le mail de celui qui a creer l'annonce
@@ -208,38 +221,47 @@ function makeApp(mongoClient) {
       from: "tempoffice.contact@gmail.com",
       to: "damien.skrzypczak@gmail.com", // a remplacer par l'adresse mail de celui qui a creer l'annonce
       subject: "Sending Email using Node.js",
-      text: "Veuillez confirmer la demande de location. "
+      text: "Veuillez confirmer la demande de location. ",
     };
 
-    const resultatAttente = await transporter.sendMail(mailOptionsAttente, function (error, info) {
-      if (error) {
-        return "erreur"
-      } else {
-        return "Mail bien envoyé"
+    const resultatAttente = await transporter.sendMail(
+      mailOptionsAttente,
+      function (error, info) {
+        if (error) {
+          return "erreur";
+        } else {
+          return "Mail bien envoyé";
+        }
       }
-    });
+    );
 
-    const resultatConfirmation = await transporter.sendMail(mailOptionsConfirmation, function (error, info) {
-      if (error) {
-        return "erreur"
-      } else {
-        return "Mail bien envoyé"
+    const resultatConfirmation = await transporter.sendMail(
+      mailOptionsConfirmation,
+      function (error, info) {
+        if (error) {
+          return "erreur";
+        } else {
+          return "Mail bien envoyé";
+        }
       }
-    });
+    );
 
-    console.log(resultatAttente, resultatConfirmation)
+    console.log(resultatAttente, resultatConfirmation);
 
     if (resultatAttente === "erreur" || resultatConfirmation === "erreur") {
-      res.json({ message: "Erreur dans l'un des mails", resultatAttente, resultatConfirmation })
+      res.json({
+        message: "Erreur dans l'un des mails",
+        resultatAttente,
+        resultatConfirmation,
+      });
     }
 
-    res.redirect("/")
-  })
+    res.redirect("/");
+  });
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", sessionParser, async (req, res) => {
-
-    console.log(req.session.mail)
+    console.log(req.session.mail);
     if (!req.session || !req.session.accessToken) {
       res.render("pages/FormCreatAnn", { isLoggedIn: false });
       console.log("you are not conected");
@@ -260,10 +282,7 @@ function makeApp(mongoClient) {
     }
   });
 
-
-
   // res.render("pages/FormCreatAnn");
-
 
   //  création de l'annonce par le vendeur (
   // app.post("/api/creation_annonce", async (req, res) => { });
@@ -300,7 +319,6 @@ function makeApp(mongoClient) {
     }
   });
   // res.render("pages/profil", { users });
-
 
   app.get("/api/logout", sessionParser, async (req, res) => {
     if (req.session) {
@@ -391,22 +409,25 @@ function makeApp(mongoClient) {
     const result = await db.collection("Annonces").insertOne(annonce);
     const createdId = result.insertedId;
 
-
     const logguedUserEmail = req.session.mail;
     // const user = await db.collection("users").findOne({mail:logguedUserEmail});
-    const Id = await db.collection("Users").updateOne({ mail: logguedUserEmail }, { $push: { annonce_vendeur: createdId } });
+    const Id = await db
+      .collection("Users")
+      .updateOne(
+        { mail: logguedUserEmail },
+        { $push: { annonce_vendeur: createdId } }
+      );
 
-    console.log(Id)
+    //console.log(Id);
 
     // trouver le user dans la collection Users
 
-    console.log("j'ai reussi");
+    //console.log("j'ai reussi");
 
     // trouver dans mongodb comment patch un tableau de donnee
     // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
 
-
-    res.redirect("/");
+    res.redirect(`/locations/${createdId}`);
     // });
 
     //     var cookieSession = require('cookie-session');
@@ -414,7 +435,7 @@ function makeApp(mongoClient) {
     //     keys: ['secret1', 'secret2']
     // }));
 
-    console.log(createdId)
+    console.log(createdId);
 
     console.log(createdId);
 
@@ -446,7 +467,6 @@ function makeApp(mongoClient) {
   });
   //
 
-
   //
   app.get("/api/login", async (req, res) => {
     res.send("result");
@@ -466,4 +486,3 @@ function makeApp(mongoClient) {
 }
 
 module.exports = { makeApp };
-
