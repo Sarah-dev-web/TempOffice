@@ -7,7 +7,7 @@ const OAuth2Client = require("@fwl/oauth2");
 const mongoSession = require("connect-mongo");
 const session = require("express-session");
 const MongoClient = require("mongodb");
-const nodemailer = require("nodemailer");
+const nodemailer = require("nodemailer")
 
 const clientWantsJson = (request) =>
   request.get("accept") === "application/json";
@@ -145,8 +145,8 @@ function makeApp(mongoClient) {
 
     res.send("la location 1 POST");
   });
-
-  app.get("/api/sendMail", async (req, res) => {
+  //message d'information sur ajout d'un bureau 
+  app.get("/api/sendMail", sessionParser, async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
       host: process.env.GMAIL_SERVICE_HOST,
@@ -165,13 +165,76 @@ function makeApp(mongoClient) {
       text: "That was easy!",
     };
 
-    transporter.sendMail(mailOptions, function (error, info) {
+    // req.session.mail
+
+    await transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.json(error);
       }
       res.redirect("/");
     });
   });
+
+  // creation de l'envoi d'un mail pour à l'acheteur pour la location 
+  app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
+
+    req.params.annonceid
+
+
+    const transporter = nodemailer.createTransport({
+      service: process.env.GMAIL_SERVICE_NAME,
+      host: process.env.GMAIL_SERVICE_HOST,
+      secure: process.env.GMAIL_SERVICE_SECURE,
+      port: process.env.GMAIL_SERVICE_PORT,
+      auth: {
+        user: process.env.GMAIL_USER_NAME,
+        pass: process.env.GMAIL_USER_PASSWORD,
+      },
+    });
+
+    console.log("voici ", req.session.mail)
+
+    const mailOptionsAttente = {
+      from: "tempoffice.contact@gmail.com",
+      to: req.session.mail,
+      subject: "Sending Email using Node.js",
+      text: "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur "
+    };
+
+    // Retrouver le mail de celui qui a creer l'annonce
+    // Lui envoyer le mail de confirmation
+
+    const mailOptionsConfirmation = {
+      from: "tempoffice.contact@gmail.com",
+      to: "damien.skrzypczak@gmail.com", // a remplacer par l'adresse mail de celui qui a creer l'annonce
+      subject: "Sending Email using Node.js",
+      text: "Veuillez confirmer la demande de location. "
+    };
+
+    const resultatAttente = await transporter.sendMail(mailOptionsAttente, function (error, info) {
+      if (error) {
+        return "erreur"
+      } else {
+        return "Mail bien envoyé"
+      }
+    });
+
+    const resultatConfirmation = await transporter.sendMail(mailOptionsConfirmation, function (error, info) {
+      if (error) {
+        return "erreur"
+      } else {
+        return "Mail bien envoyé"
+      }
+    });
+
+    console.log(resultatAttente, resultatConfirmation)
+
+    if (resultatAttente === "erreur" || resultatConfirmation === "erreur") {
+      res.json({ message: "Erreur dans l'un des mails", resultatAttente, resultatConfirmation })
+    }
+
+    res.redirect("/")
+  })
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", sessionParser, async (req, res) => {
@@ -312,6 +375,7 @@ function makeApp(mongoClient) {
   app.post("/api/creation_annonce", sessionParser, async (req, res) => {
     const dataForm = req.body;
     const annonce = {
+      email: dataForm.email,
       titre: dataForm.titre,
       prix: dataForm.prix,
       taille: dataForm.taille,
@@ -382,6 +446,8 @@ function makeApp(mongoClient) {
   });
   //
 
+
+  //
   app.get("/api/login", async (req, res) => {
     res.send("result");
   });
@@ -400,3 +466,4 @@ function makeApp(mongoClient) {
 }
 
 module.exports = { makeApp };
+
