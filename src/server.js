@@ -162,7 +162,7 @@ function makeApp(mongoClient) {
       from: "tempoffice.contact@gmail.com",
       to: "fmariama219@gmail.com",
       subject: "Sending Email using Node.js",
-      text: "That was easy!",
+      text: "vous avez ajouter une annonce!",
     };
 
     // req.session.mail
@@ -178,7 +178,7 @@ function makeApp(mongoClient) {
   // creation de l'envoi d'un mail pour à l'acheteur pour la location 
   app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
 
-    req.params.annonceid
+    // req.params.annonceid
 
 
     const transporter = nodemailer.createTransport({
@@ -192,11 +192,11 @@ function makeApp(mongoClient) {
       },
     });
 
-    console.log("voici ", req.session.mail)
+    // console.log("voici ", req.session.mail)
 
     const mailOptionsAttente = {
       from: "tempoffice.contact@gmail.com",
-      to: req.session.mail,
+      to: "fmariama219@gmail.com",
       subject: "Sending Email using Node.js",
       text: "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur "
     };

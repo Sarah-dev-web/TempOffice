@@ -28,11 +28,11 @@
       </div>
     </div>
     
-    <button type="button" class="btn btn-info btn-sm add-to-cart m-1">
+    <button a href= "/api/sendMailAch/:annonceid" type="button" class="btn btn-info btn-sm add-to-cart m-1"> 
       <div id="price">
         {{annonce.prix}}</div>
-      <div id="addAnnonce"> Réserver</div>
-    </button>
+      <div id="addAnnonce"> Réserver </div>
+    </button></a>
     {# <a href="/annonce/{{annonce._id}}/edit" class="btn btn-info btn-sm add-to-cart m-1">Edit</a> #}
   </div>
 {% endblock %}
