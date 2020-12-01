@@ -63,6 +63,7 @@ function makeApp(mongoClient) {
   const oauthClient = new OAuth2Client.default(oauthClientConstructor);
 
   app.get("/", sessionParser, async (req, res) => {
+    
     if (!req.session || !req.session.accessToken) {
       res.render("pages/home", { isLoggedIn: false });
       console.log("you are not conected");
@@ -115,9 +116,8 @@ function makeApp(mongoClient) {
   app.get("/locations/:location_id",sessionParser, async (req, res) => {
     const locationId = req.params.location_id;
     const annonce = await db
-      .collection("Annonces")
-      .findOne({ "_id.$oid": locationId }.toArray);
-    console.log(annonce);
+    .collection("Annonces")
+    .findOne({ _id: MongoClient.ObjectId(locationId) });
     if (!req.session || !req.session.accessToken) {
       res.render("pages/locationid", { annonce, locationId, isLoggedIn: false });
       console.log("you are not conected");

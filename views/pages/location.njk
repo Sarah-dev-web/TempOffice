@@ -1,5 +1,7 @@
 {% extends "layout/index.njk" %}
-
+{% block css %}
+  <link rel="stylesheet" href="/static/styles/location.css">
+{% endblock %} 
 {% block beforeContainer %}
  
 {% endblock %}
@@ -8,16 +10,24 @@
 <div>
 <div class="flex-row">
 {# <div class="card-deck" style="max-width: 18rem;"> #}
-<div class="card col-12 col-md-3 mx-2 mt-3">
+  <div class="d-flex justify-content-center flex-wrap">
 {% for annonce in annonces %}
 <div>
- <div class="card">
+    <div class="card border-info p-1 m-1 shadow-lg"style="width: 16rem;">
     <img class="card-img-top" style="max-width: 255px;" src="/static/images/1.jpg" alt="Card image cap">
     <div class="card-body">
       <h5 class="card-title">{{ annonce.titre}}</h5>
-      <p class="card-text">{{annonce.description}}</p>
+      <p class="card-text">
+      <ul id="list">
+        <li>{{annonce.taille}}</li>
+        <li>{{annonce.ville}}</li>
+        <li>{{annonce.prix}}</li>
+
+        </ul>
+      </p>
+
       <div class="card-footer">
-      <a href="/locations/{{annonce._id}}"  class="btn btn-primary btn-block" role="button"> Louez moi  </a>
+      <a href="/locations/{{annonce._id}}"  class="btn btn-info btn-block" role="button"> Voir</a>
     </div>
   </div>
 

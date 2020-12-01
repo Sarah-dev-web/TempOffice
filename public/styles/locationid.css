@@ -1,0 +1,17 @@
+#game-main .row {
+  flex-direction: column-reverse;
+}
+@media (min-width: 992px) {
+  #game-main .row {
+    flex-direction: row;
+  }
+}
+
+#titre{
+  font-family: 'robotocondensed-regular';
+  text-transform: uppercase;
+}
+
+#description{
+  font-family: 'open_sansregular';
+}
