@@ -83,7 +83,7 @@ function makeApp(mongoClient) {
     }
   });
 
-  app.get("/locations", async (req, res) => {
+  app.get("/locations", sessionParser, async (req, res) => {
 
 
     const annonces = await db.collection("Annonces").find().toArray();
@@ -91,6 +91,7 @@ function makeApp(mongoClient) {
     // res.render("pages/location");
     if (!req.session || !req.session.accessToken) {
       res.render("pages/location", { annonces, isLoggedIn: false });
+      console.log("you are not conected");
       console.log("you are not conected");
       return;
     }
@@ -111,7 +112,7 @@ function makeApp(mongoClient) {
     // res.render("pages/location", { annonces });
   // });
 
-  app.get("/locations/:location_id", async (req, res) => {
+  app.get("/locations/:location_id",sessionParser, async (req, res) => {
     const locationId = req.params.location_id;
     const annonce = await db
       .collection("Annonces")
