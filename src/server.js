@@ -103,8 +103,8 @@ function makeApp(mongoClient) {
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
-  //message d'information sur ajout un bureau 
-  app.get("/api/sendMail", async (req, res) => {
+  //message d'information sur ajout d'un bureau 
+  app.get("/api/sendMail", sessionParser, async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
       host: process.env.GMAIL_SERVICE_HOST,
@@ -118,10 +118,12 @@ function makeApp(mongoClient) {
 
     const mailOptions = {
       from: "tempoffice.contact@gmail.com",
-      to: "damien.skrzypczak@gmail.com",
+      to: "fmariama219@gmail.com",
       subject: "Sending Email using Node.js",
       text: "That was easy!",
     };
+
+    // req.session.mail
 
     await transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
@@ -132,7 +134,9 @@ function makeApp(mongoClient) {
   });
 
   // creation de l'envoi d'un mail pour à l'acheteur pour la location 
-  app.get("/api/sendMailAch", async (req, res) => {
+  app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
+
+    req.params.annonceid
 
 
     const transporter = nodemailer.createTransport({
@@ -146,16 +150,21 @@ function makeApp(mongoClient) {
       },
     });
 
+    console.log("voici ", req.session.mail)
+
     const mailOptionsAttente = {
       from: "tempoffice.contact@gmail.com",
-      to: "fmariama219@gmail.com",
+      to: req.session.mail,
       subject: "Sending Email using Node.js",
       text: "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur "
     };
 
+    // Retrouver le mail de celui qui a creer l'annonce
+    // Lui envoyer le mail de confirmation
+
     const mailOptionsConfirmation = {
       from: "tempoffice.contact@gmail.com",
-      to: "damien.skrzypczak@gmail.com",
+      to: "damien.skrzypczak@gmail.com", // a remplacer par l'adresse mail de celui qui a creer l'annonce
       subject: "Sending Email using Node.js",
       text: "Veuillez confirmer la demande de location. "
     };
