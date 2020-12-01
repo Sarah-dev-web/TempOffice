@@ -115,8 +115,8 @@ function makeApp(mongoClient) {
   app.get("/locations/:location_id", async (req, res) => {
     const locationId = req.params.location_id;
     const annonce = await db
-      .collection("Annonces")
-      .findOne({ "_id.$oid": locationId }.toArray);
+    .collection("Annonces")
+    .findOne({ _id: MongoClient.ObjectId(locationId) });
     if (!req.session || !req.session.accessToken) {
       res.render("pages/locationid", { annonce, locationId, isLoggedIn: false });
       console.log("you are not conected");
