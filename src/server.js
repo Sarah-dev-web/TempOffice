@@ -164,10 +164,11 @@ function makeApp(mongoClient) {
 
     const mailOptions = {
       from: "tempoffice.contact@gmail.com",
-      to: "fmariama219@gmail.com",
+      to: req.session.mail,
       subject: "Sending Email using Node.js",
       text: "vous avez ajouter une annonce!",
     };
+    console.log(req.session.mail);
 
     // req.session.mail
 
@@ -181,13 +182,12 @@ function makeApp(mongoClient) {
 
   // creation de l'envoi d'un mail pour à l'acheteur pour la location
   app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
-<<<<<<< HEAD
+    console.log("le mail de la personne connecté", req.session.mail);
+    console.log("le id de ann", req.params.annonceid);
 
-    // req.params.annonceid
 
-=======
-    req.params.annonceid;
->>>>>>> f2b797e2ea919189f9ae06f23e17ded0355088a2
+    const vendeurData = await db.collection("Users").findOne({ annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] } })
+    console.log("192", vendeurData.mail)
 
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
@@ -200,15 +200,9 @@ function makeApp(mongoClient) {
       },
     });
 
-<<<<<<< HEAD
-    // console.log("voici ", req.session.mail)
-=======
-    console.log("voici ", req.session.mail);
->>>>>>> f2b797e2ea919189f9ae06f23e17ded0355088a2
-
     const mailOptionsAttente = {
       from: "tempoffice.contact@gmail.com",
-      to: "fmariama219@gmail.com",
+      to: req.session.mail,
       subject: "Sending Email using Node.js",
       text:
         "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur ",
@@ -219,7 +213,7 @@ function makeApp(mongoClient) {
 
     const mailOptionsConfirmation = {
       from: "tempoffice.contact@gmail.com",
-      to: "damien.skrzypczak@gmail.com", // a remplacer par l'adresse mail de celui qui a creer l'annonce
+      to: vendeurData.mail, // a remplacer par l'adresse mail de celui qui a creer l'annonce
       subject: "Sending Email using Node.js",
       text: "Veuillez confirmer la demande de location. ",
     };
@@ -343,7 +337,7 @@ function makeApp(mongoClient) {
 
     // récupère l'email du token
     const dataEmailUser = decodedPayload.email;
-    console.log("email du token :" + dataEmailUser);
+    // console.log("email du token :" + dataEmailUser);
 
     // rechercher si  l'email est déjà enregistré dans la bd
 
@@ -353,7 +347,7 @@ function makeApp(mongoClient) {
       .collection("Users")
       .findOne({ mail: dataEmailUser });
 
-    console.log("email de la db", dataEmailBd);
+    // console.log("email de la db", dataEmailBd);
 
     // on déclare une variable dont la valeur est vide
     let dataEmailBdUser = "";
@@ -361,7 +355,7 @@ function makeApp(mongoClient) {
     // si le champ email de la bd n'est pas vide, alors l'email de l'user est déjà enregistré dans la bd
     if (dataEmailBd !== null) {
       dataEmailBdUser = dataEmailBd.mail;
-      console.log("email bd user ", dataEmailBdUser);
+      // console.log("email bd user ", dataEmailBdUser);
     }
 
     // si le compte existe déjà, on crée le cookie en mémorisant le mail
@@ -435,9 +429,9 @@ function makeApp(mongoClient) {
     //     keys: ['secret1', 'secret2']
     // }));
 
-    console.log(createdId);
+    // console.log(createdId);
 
-    console.log(createdId);
+    // console.log(createdId);
 
     res.end("");
   });
