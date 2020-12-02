@@ -83,6 +83,7 @@ function makeApp(mongoClient) {
     }
   });
 
+
   app.get("/locations", sessionParser, async (req, res) => {
     const annonces = await db.collection("Annonces").find().toArray();
     // res.json(annonce);
@@ -423,7 +424,6 @@ function makeApp(mongoClient) {
       );
 
     //console.log(Id);
-
     // trouver le user dans la collection Users
 
     //console.log("j'ai reussi");
@@ -439,7 +439,7 @@ function makeApp(mongoClient) {
     //     keys: ['secret1', 'secret2']
     // }));
 
-    // console.log(createdId);
+    console.log(createdId);
 
     // console.log(createdId);
 
@@ -449,6 +449,7 @@ function makeApp(mongoClient) {
   // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
 
   app.post("/locations", async (req, res) => {
+    // on recherche les données saisies par l'user dans le formulaire
     const dataForm = req.body;
     const annonce = {
       titre: dataForm.titre,
@@ -465,6 +466,7 @@ function makeApp(mongoClient) {
       description: dataForm.description,
     };
     // console.log("DATAFORM", dataForm);
+    // on insère les données saisies de l'user dans la BD
     db.collection("Annonces").insertOne({ annonce });
 
     res.render("pages/location");
