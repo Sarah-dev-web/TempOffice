@@ -2,37 +2,51 @@
 {% block beforeContainer %}{% endblock %}
 {% block css %}
   <link rel="stylesheet" href="/static/styles/locationid.css">
-{% endblock %} 
+{% endblock %}
 {% block content %}
   <div class="card p-5 mb-5 mt-5" id="game-main">
     <div class="row">
-    {% if annonce.image %}
-      <div class="col-4 col-md-3">
-        <img src="{{annonce.image}}" alt="{{annonce.titre}} cover">
+      {% if annonce.image %}
+        <div class="col-4 col-md-3">
+          <img src="{{annonce.image}}" alt="{{annonce.titre}} cover">
+        </div>
+        {%else%}
+        <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" alt="Pas d'image">
+        {%endif%}
+        <div class="col-8 row p-5 pt-4">
+          <h1 id="titre" class="pb-2">{{annonce.titre}}</h1>
+          <p id="description">{{annonce.description}}</p>
+          <p id="description">{{annonce.mobilier}}</p>
+          <small class="text-muted">
+            <p>
+              {{annonce.ville}}
+            </p>
+            <p>
+              {{annonce.adresse}}
+            </p>
+          </small>
+        </div>
       </div>
-    {%else%}
-      <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" alt="Pas d'image">
-    {%endif%}
-      <div class="col-8 row p-5 pt-4">
-        <h1 id="titre" class="pb-2">{{annonce.titre}}</h1>
-        <p id="description">{{annonce.description}}</p>
-        <p id="description">{{annonce.mobilier}}</p>
-        <small class="text-muted">
-          <p>
-           {{annonce.ville}}
-          </p>
-          <p>
-           {{annonce.adresse}}
-          </p>
-        </small>
+      {% if isLoggedIn%}
+        <a href="/api/sendMailAch/{{ annonce._id }}" type="button" class="btn btn-info btn-sm add-to-cart m-1">
+          <div id="price">
+            {{ annonce.prix }}</div>
+          <div id="addAnnonce">
+            Réserver
+          </div>
+
+        </a>
+      {% else %}
+        {# <a href="/api/login"> #}
+        <a href="/api/login" type="button" class="btn btn-info btn-sm add-to-cart m-1">
+          <div id="price">
+            {{ annonce.prix }}</div>
+          <div id="addAnnonce">
+            Réserver
+          </div>
+        </a>
+        {%endif%}
+
+        {# <a href="/annonce/{{annonce._id}}/edit" class="btn btn-info btn-sm add-to-cart m-1">Edit</a> #}
       </div>
-    </div>
-    
-    <a href= "/api/sendMailAch/{{ annonce._id }}" type="button" class="btn btn-info btn-sm add-to-cart m-1"> 
-      <div id="price">
-        {{ annonce.prix }}</div>
-      <div id="addAnnonce"> Réserver </div>
-    </a>
-    {# <a href="/annonce/{{annonce._id}}/edit" class="btn btn-info btn-sm add-to-cart m-1">Edit</a> #}
-  </div>
-{% endblock %}
+    {% endblock %}
