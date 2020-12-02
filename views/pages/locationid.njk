@@ -2,7 +2,7 @@
 {% block beforeContainer %}{% endblock %}
 {% block css %}
   <link rel="stylesheet" href="/static/styles/locationid.css">
-{% endblock %}
+{% endblock %} 
 {% block content %}
   <div class="card p-5 mb-5 mt-5 border-info" id="game-main">
     <div class="row">
@@ -25,36 +25,26 @@
            {{annonce.adresse}}
           </p>
         </small>
-
-      {% if isLoggedIn%}
-        <a href="/api/sendMailAch/{{ annonce._id }}" type="button" class="btn btn-info btn-sm add-to-cart m-1">
-          <div id="price">
-            {{ annonce.prix }}</div>
-          <div id="addAnnonce">
-            Réserver
-          </div>
-
-        </a>
-      {% else %}
-        {# <a href="/api/login"> #}
-        <a href="/api/login" type="button" class="btn btn-info btn-sm add-to-cart m-1">
-          <div id="price">
-            {{ annonce.prix }}</div>
-          <div id="addAnnonce">
-            Réserver
-          </div>
-    
-        {%endif%}
-
-        {# <a href="/annonce/{{annonce._id}}/edit" class="btn btn-info btn-sm add-to-cart m-1">Edit</a> #}
       </div>
     </div>
-    
-    <button a href= "/api/sendMailAch/:annonceid" type="button" class="btn btn-info btn-sm add-to-cart m-1"> 
-      <div id="price">
-        {{annonce.prix}}</div>
-      <div id="addAnnonce"> Réserver </div>
-    </button></a>
+
+    {% if isLoggedIn%}
+            <a href="/api/sendMailAch/{{ annonce._id }}" type="button" class="btn btn-info btn-sm add-to-cart m-1">
+              <div id="price">
+                {{ annonce.prix }}</div>
+              <div id="addAnnonce">
+                Réserver
+              </div>
+            </a>
+          {% else %}
+            <a href="/api/login" type="button" class="btn btn-info btn-sm add-to-cart m-1">
+              <div id="price">
+                {{ annonce.prix }}</div>
+              <div id="addAnnonce">
+                Réserver
+              </div>
+            </a>
+    {%endif%}
     {# <a href="/annonce/{{annonce._id}}/edit" class="btn btn-info btn-sm add-to-cart m-1">Edit</a> #}
   </div>
 {% endblock %}
