@@ -114,6 +114,7 @@ function makeApp(mongoClient) {
         locationId,
         isLoggedIn: false,
       });
+
       return;
     }
     try {
@@ -155,10 +156,11 @@ function makeApp(mongoClient) {
 
     const mailOptions = {
       from: "tempoffice.contact@gmail.com",
-      to: "fmariama219@gmail.com",
+      to: req.session.mail,
       subject: "Sending Email using Node.js",
-      text: "That was easy!",
+      text: "vous avez ajouter une annonce!",
     };
+    console.log(req.session.mail);
 
     // req.session.mail
 
@@ -172,7 +174,34 @@ function makeApp(mongoClient) {
 
   // creation de l'envoi d'un mail pour à l'acheteur pour la location
   app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
-    req.params.annonceid;
+
+    console.log("le mail de la personne connecté", req.session.mail);
+    console.log("le id de ann", req.params.annonceid);
+
+    const vendeurData = await db.collection("Users").findOne({
+      annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] },
+    });
+
+    console.log("192", vendeurData);
+    const Idacheteur = await db
+      .collection("Users")
+      .updateOne(
+        { mail: req.session.mail },
+        { $push: { annonce_acheteur: req.params.annonceid } }
+      );
+
+    const vendeurData = await db.collection("Users").findOne({ annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] } })
+    const createdId = result.insertedId;
+
+    const adressAch = req.params.annonceid;
+    // const Ach = await db.collection("Users").findOne({mail:logguedUserEmail});
+    const Id = await db
+      .collection("Users")
+      .updateOne(
+        { mail: logguedUserEmail },
+        { $push: { annonce_acheteur: req.params.annonceid } }
+      );
+    console.log("192", vendeurData.mail)
 
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
@@ -184,8 +213,6 @@ function makeApp(mongoClient) {
         pass: process.env.GMAIL_USER_PASSWORD,
       },
     });
-
-    console.log("voici ", req.session.mail);
 
     const mailOptionsAttente = {
       from: "tempoffice.contact@gmail.com",
@@ -200,7 +227,7 @@ function makeApp(mongoClient) {
 
     const mailOptionsConfirmation = {
       from: "tempoffice.contact@gmail.com",
-      to: "damien.skrzypczak@gmail.com", // a remplacer par l'adresse mail de celui qui a creer l'annonce
+      to: vendeurData.mail, // a remplacer par l'adresse mail de celui qui a creer l'annonce
       subject: "Sending Email using Node.js",
       text: "Veuillez confirmer la demande de location. ",
     };
@@ -325,7 +352,7 @@ function makeApp(mongoClient) {
 
     // récupère l'email du token
     const dataEmailUser = decodedPayload.email;
-    console.log("email du token :" + dataEmailUser);
+    // console.log("email du token :" + dataEmailUser);
 
     // rechercher si  l'email est déjà enregistré dans la bd
 
@@ -335,7 +362,7 @@ function makeApp(mongoClient) {
       .collection("Users")
       .findOne({ mail: dataEmailUser });
 
-    console.log("email de la db", dataEmailBd);
+    // console.log("email de la db", dataEmailBd);
 
     // on déclare une variable dont la valeur est vide
     let dataEmailBdUser = "";
@@ -343,7 +370,7 @@ function makeApp(mongoClient) {
     // si le champ email de la bd n'est pas vide, alors l'email de l'user est déjà enregistré dans la bd
     if (dataEmailBd !== null) {
       dataEmailBdUser = dataEmailBd.mail;
-      console.log("email bd user ", dataEmailBdUser);
+      // console.log("email bd user ", dataEmailBdUser);
     }
 
     // si le compte existe déjà, on crée le cookie en mémorisant le mail
@@ -400,26 +427,24 @@ function makeApp(mongoClient) {
         { $push: { annonce_vendeur: createdId } }
       );
 
-    console.log(Id);
-
+    //console.log(Id);
     // trouver le user dans la collection Users
 
-    console.log("j'ai reussi");
+    //console.log("j'ai reussi");
 
     // trouver dans mongodb comment patch un tableau de donnee
     // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
 
-    res.redirect("/");
+    res.redirect(`/locations/${createdId}`);
     // });
 
     //     var cookieSession = require('cookie-session');
     //     app.use(cookieSession({
     //     keys: ['secret1', 'secret2']
     // }));
-
     console.log(createdId);
 
-    console.log(createdId);
+    // console.log(createdId);
 
     res.end("");
   });
@@ -427,6 +452,7 @@ function makeApp(mongoClient) {
   // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
 
   app.post("/locations", async (req, res) => {
+    // on recherche les données saisies par l'user dans le formulaire
     const dataForm = req.body;
     const annonce = {
       titre: dataForm.titre,
@@ -443,6 +469,7 @@ function makeApp(mongoClient) {
       description: dataForm.description,
     };
     // console.log("DATAFORM", dataForm);
+    // on insère les données saisies de l'user dans la BD
     db.collection("Annonces").insertOne({ annonce });
 
     res.render("pages/location");
