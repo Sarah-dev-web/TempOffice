@@ -198,7 +198,18 @@ function makeApp(mongoClient) {
         { $push: { annonce_acheteur: req.params.annonceid } }
       );
 
-    console.log("ID ACHETEUUUUR", Idacheteur);
+    const vendeurData = await db.collection("Users").findOne({ annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] } })
+    const createdId = result.insertedId;
+
+    const adressAch = req.params.annonceid;
+    // const Ach = await db.collection("Users").findOne({mail:logguedUserEmail});
+    const Id = await db
+      .collection("Users")
+      .updateOne(
+        { mail: logguedUserEmail },
+        { $push: { annonce_acheteur: req.params.annonceid } }
+      );
+    console.log("192", vendeurData.mail)
 
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
