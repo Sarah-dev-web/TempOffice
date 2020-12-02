@@ -1,50 +1,50 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  
-   
-  
-      <a class="navbar-brand title mr-auto" href="/">TempOffice</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-   
-       
 
-    <div class="navbar-brand mr-auto ml-auto">
+      <a  href="/">TempOffice</a>
+          <span class="navbar-toggler-icon"></span>
+ 
+    <div >
         <form class="form-inline " >
           <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
           <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
         </form>
     </div>
   
-    
-  
-  <div class="mx-auto order-0">
-    <div class="navbar-nav  mr-auto justify-content-end">
-          <a href="/locations">
-            <button type="submit" class="btn btn-warning">
-              Nos locations
-            </button>
-          </a>
-              
-          <a href="/" > 
-          <button type="submit" class="btn btn-danger" > message 
-          </button>
-          </a>
-             
-          <a href="/api/creation_annonce">
-            <button type="submit" class="btn btn-success">Proposer ma salle</button>
-          </a>
-         
-          {% if isLoggedIn%}
-            <a href="/api/logout">
-              <button type="submit" class="btn btn-danger">logout</button>
-            </a>
-          {% else %}
-            <a href="/api/login">
-              <button type="submit" class="btn btn-primary">login</button>
-            </a>
 
-          {% endif %}
+    <div class="collapse navbar-collapse d-flex justify-content-end " >
+      <ul class="navbar-nav ">
+        <li class="nav-item text" >
+          <a class="nav-link title" href="/locations">Locations</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link title" href="/">Message</a>
+        </li>
+        <li class="nav-link title">
+        
+          {% if isLoggedIn%}
+            <a href="/api/creation_annonce">Proposer ma salle</a>
+            {% else %}
+            {% endif %}     
+         
+            {% if isLoggedIn%}
+        </li>
+        <li class="nav-link title ">
+            <a href="/api/logout">
+              Logout
+              </a>
+            {% else %}
+              <a href="/api/login">
+                Login
+              </a>
+
+            {% endif %}
+        </li>
+      </ul>
     </div>
-  </div>  
+  
+  
+          
+          
+            
+     
 </nav>
