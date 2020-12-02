@@ -63,8 +63,16 @@ function makeApp(mongoClient) {
   const oauthClient = new OAuth2Client.default(oauthClientConstructor);
 
   app.get("/", sessionParser, async (req, res) => {
+    const homeAllAnnonces = await db.collection("Annonces").find().toArray();
+    // affiche bien un tableau avec toutes les annonces dans la BD
+    let annonceBD;
+    const selectThreeAnnonces = [
+      homeAllAnnonces[homeAllAnnonces.length - 3],
+      homeAllAnnonces[homeAllAnnonces.length - 2],
+      homeAllAnnonces[homeAllAnnonces.length - 1],
+    ];
     if (!req.session || !req.session.accessToken) {
-      res.render("pages/home", { isLoggedIn: false });
+      res.render("pages/home", { selectThreeAnnonces, isLoggedIn: false });
       return;
     }
     try {
@@ -72,10 +80,29 @@ function makeApp(mongoClient) {
         req.session.accessToken,
         process.env.JWT_ALGORITHM || ""
       );
-      res.render("pages/home", { isLoggedIn: true });
+      res.render("pages/home", { selectThreeAnnonces, isLoggedIn: true });
     } catch (error) {
       req.session.destroy(() => {
         res.render("pages/home", { isLoggedIn: false });
+        console.error(error);
+      });
+    }
+  });
+  app.get("/locations", async (req, res) => {
+    const annonces = await db.collection("Annonces").find().toArray();
+    if (!req.session || !req.session.accessToken) {
+      res.render("pages/location", { annonces, isLoggedIn: false });
+      return;
+    }
+    try {
+      await oauthClient.verifyJWT(
+        req.session.accessToken,
+        process.env.JWT_ALGORITHM || ""
+      );
+      res.render("pages/location", { annonces, isLoggedIn: true });
+    } catch (error) {
+      req.session.destroy(() => {
+        res.render("pages/location", { annonces, isLoggedIn: false });
         console.error(error);
       });
     }
