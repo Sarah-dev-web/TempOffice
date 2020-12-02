@@ -8,10 +8,6 @@
 }
 
 #titre{
-  font-family: 'robotocondensed-regular';
+  /* font-family: 'robotocondensed-regular'; */
   text-transform: uppercase;
-}
-
-#description{
-  font-family: 'open_sansregular';
 }
