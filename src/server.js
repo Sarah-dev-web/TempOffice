@@ -83,12 +83,14 @@ function makeApp(mongoClient) {
     }
   });
 
-  app.get("/locations", async (req, res) => {
+
+  app.get("/locations", sessionParser, async (req, res) => {
     const annonces = await db.collection("Annonces").find().toArray();
     // res.json(annonce);
     // res.render("pages/location");
     if (!req.session || !req.session.accessToken) {
       res.render("pages/location", { annonces, isLoggedIn: false });
+      console.log("you are not conected");
       console.log("you are not conected");
       return;
     }
@@ -109,12 +111,11 @@ function makeApp(mongoClient) {
   // res.render("pages/location", { annonces });
   // });
 
-  app.get("/locations/:location_id", async (req, res) => {
+  app.get("/locations/:location_id", sessionParser, async (req, res) => {
     const locationId = req.params.location_id;
     const annonce = await db
       .collection("Annonces")
-      .findOne({ "_id.$oid": locationId }.toArray);
-    console.log(annonce);
+      .findOne({ _id: MongoClient.ObjectId(locationId) });
     if (!req.session || !req.session.accessToken) {
       res.render("pages/locationid", {
         annonce,
@@ -149,8 +150,8 @@ function makeApp(mongoClient) {
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
   });
-
-  app.get("/api/sendMail", async (req, res) => {
+  //message d'information sur ajout d'un bureau
+  app.get("/api/sendMail", sessionParser, async (req, res) => {
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
       host: process.env.GMAIL_SERVICE_HOST,
@@ -164,17 +165,103 @@ function makeApp(mongoClient) {
 
     const mailOptions = {
       from: "tempoffice.contact@gmail.com",
-      to: "fmariama219@gmail.com",
+      to: req.session.mail,
       subject: "Sending Email using Node.js",
-      text: "That was easy!",
+      text: "vous avez ajouter une annonce!",
     };
+    console.log(req.session.mail);
 
-    transporter.sendMail(mailOptions, function (error, info) {
+    // req.session.mail
+
+    await transporter.sendMail(mailOptions, function (error, info) {
       if (error) {
         res.json(error);
       }
       res.redirect("/");
     });
+  });
+
+  // creation de l'envoi d'un mail pour à l'acheteur pour la location
+  app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
+    console.log("le mail de la personne connecté", req.session.mail);
+    console.log("le id de ann", req.params.annonceid);
+
+    const vendeurData = await db.collection("Users").findOne({
+      annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] },
+    });
+
+    console.log("192", vendeurData);
+    const Idacheteur = await db
+      .collection("Users")
+      .updateOne(
+        { mail: req.session.mail },
+        { $push: { annonce_acheteur: req.params.annonceid } }
+      );
+
+    console.log("ID ACHETEUUUUR", Idacheteur);
+
+    const transporter = nodemailer.createTransport({
+      service: process.env.GMAIL_SERVICE_NAME,
+      host: process.env.GMAIL_SERVICE_HOST,
+      secure: process.env.GMAIL_SERVICE_SECURE,
+      port: process.env.GMAIL_SERVICE_PORT,
+      auth: {
+        user: process.env.GMAIL_USER_NAME,
+        pass: process.env.GMAIL_USER_PASSWORD,
+      },
+    });
+
+    const mailOptionsAttente = {
+      from: "tempoffice.contact@gmail.com",
+      to: req.session.mail,
+      subject: "Sending Email using Node.js",
+      text:
+        "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur ",
+    };
+
+    // Retrouver le mail de celui qui a creer l'annonce
+    // Lui envoyer le mail de confirmation
+
+    const mailOptionsConfirmation = {
+      from: "tempoffice.contact@gmail.com",
+      to: vendeurData.mail, // a remplacer par l'adresse mail de celui qui a creer l'annonce
+      subject: "Sending Email using Node.js",
+      text: "Veuillez confirmer la demande de location. ",
+    };
+
+    const resultatAttente = await transporter.sendMail(
+      mailOptionsAttente,
+      function (error, info) {
+        if (error) {
+          return "erreur";
+        } else {
+          return "Mail bien envoyé";
+        }
+      }
+    );
+
+    const resultatConfirmation = await transporter.sendMail(
+      mailOptionsConfirmation,
+      function (error, info) {
+        if (error) {
+          return "erreur";
+        } else {
+          return "Mail bien envoyé";
+        }
+      }
+    );
+
+    console.log(resultatAttente, resultatConfirmation);
+
+    if (resultatAttente === "erreur" || resultatConfirmation === "erreur") {
+      res.json({
+        message: "Erreur dans l'un des mails",
+        resultatAttente,
+        resultatConfirmation,
+      });
+    }
+
+    res.redirect("/");
   });
 
   //  annonce qui se retrouve sur la page la location (
@@ -261,7 +348,7 @@ function makeApp(mongoClient) {
 
     // récupère l'email du token
     const dataEmailUser = decodedPayload.email;
-    console.log("email du token :" + dataEmailUser);
+    // console.log("email du token :" + dataEmailUser);
 
     // rechercher si  l'email est déjà enregistré dans la bd
 
@@ -271,7 +358,7 @@ function makeApp(mongoClient) {
       .collection("Users")
       .findOne({ mail: dataEmailUser });
 
-    console.log("email de la db", dataEmailBd);
+    // console.log("email de la db", dataEmailBd);
 
     // on déclare une variable dont la valeur est vide
     let dataEmailBdUser = "";
@@ -279,7 +366,7 @@ function makeApp(mongoClient) {
     // si le champ email de la bd n'est pas vide, alors l'email de l'user est déjà enregistré dans la bd
     if (dataEmailBd !== null) {
       dataEmailBdUser = dataEmailBd.mail;
-      console.log("email bd user ", dataEmailBdUser);
+      // console.log("email bd user ", dataEmailBdUser);
     }
 
     // si le compte existe déjà, on crée le cookie en mémorisant le mail
@@ -311,6 +398,7 @@ function makeApp(mongoClient) {
   app.post("/api/creation_annonce", sessionParser, async (req, res) => {
     const dataForm = req.body;
     const annonce = {
+      email: dataForm.email,
       titre: dataForm.titre,
       prix: dataForm.prix,
       taille: dataForm.taille,
@@ -335,16 +423,15 @@ function makeApp(mongoClient) {
         { $push: { annonce_vendeur: createdId } }
       );
 
-    console.log(Id);
-
+    //console.log(Id);
     // trouver le user dans la collection Users
 
-    console.log("j'ai reussi");
+    //console.log("j'ai reussi");
 
     // trouver dans mongodb comment patch un tableau de donnee
     // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
 
-    res.redirect("/");
+    res.redirect(`/locations/${createdId}`);
     // });
 
     //     var cookieSession = require('cookie-session');
@@ -354,7 +441,7 @@ function makeApp(mongoClient) {
 
     console.log(createdId);
 
-    console.log(createdId);
+    // console.log(createdId);
 
     res.end("");
   });
@@ -386,6 +473,7 @@ function makeApp(mongoClient) {
   });
   //
 
+  //
   app.get("/api/login", async (req, res) => {
     res.send("result");
   });
