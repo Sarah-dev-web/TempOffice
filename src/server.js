@@ -438,6 +438,7 @@ function makeApp(mongoClient) {
       datefin: dataForm.datefin,
       adresse: dataForm.adresse,
       codepostal: dataForm.codepostal,
+      image: dataForm.image,
       ville: dataForm.ville,
       mobilier: dataForm.mobilier,
       description: dataForm.description,
