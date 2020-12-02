@@ -1,60 +1,71 @@
 {% extends "layout/index.njk" %}
-{% block beforeContainer %}
-{% endblock %}
+{% block beforeContainer %}{% endblock %}
 {% block content %}
-<body>
-<div class="mt-5"
-  <form method="POST" action="/api/creation_annonce">
-    <div class="form-group">
-     <label for="usr">Titre : </label>
-      <input class="form-control" type="text" placeholder="Description de votre bureau">
-    </div>
-     <div class="form-group">
-      <label for="usr">Prix : </label>
-      <input class="form-control" type="text" placeholder="0€">
-    </div>
-    <div class="form-group">
-      <label for="usr">Taille :</label>
-      <input class="form-control" type="text" placeholder="Taille de votre bureau">
-    </div>
-    <div> 
-      <p> Disponible du : </p>
-        <input type="text" name="datedebut" id="datepicker" value="{{formatedDate}}">
-    </div>
-    <div>
-     <p> Au : </p>
-      <input type="text" name="datefin" id="datepickerFin" value="{{formatedDate}}">
-    </div>
-    <div class="form-group">
-      <label for="inputAddress">Adresse : </label>
-      <input type="text" class="form-control" name="adresse" id="adresse" placeholder="05 rue du ballon ">
-    </div>
-    <div class="form-group">
-      <label for="inputCodePostal">Code postal : </label>
-      <input class="form-control" type="text" placeholder="59000">
-    </div>
-    <div class="form-row">
-      <div class="form-group col-md-6">
-        <label for="inputCity">Ville : </label>
-        <input class="form-control" type="text" placeholder="59000">
-      </div>
-    </div> 
-    <p>Photo du bien : </p>
-    <div id="AjoutIm">
-      <input type="file" id="myFile" name="filename2">
-    </div>
-    <p>Liste du mobilier :</p>
-    <div class="form-group">
-      <textarea class="form-control" rows="5" id="mobilier" name="mobilier"></textarea>
-    </div>
-    <p>Description du bien :</p>
-    <div class="form-group">
-      <textarea class="form-control" rows="5" id="description" name="description"></textarea>
-    </div>
-      <button type="submit" class="btn btn-primary">Add</button> 
+  <body>
+    <div class="mt-5">
+      <form method="POST" action="/api/creation_annonce">
+        <div class="form-group">
+          <label for="usr">Titre :
+          </label>
+          <input class="form-control" type="text" placeholder="Description de votre bureau">
+        </div>
+        <div class="form-group">
+          <label for="usr">Prix :
+          </label>
+          <input class="form-control" type="text" placeholder="0€">
+        </div>
+        <div class="form-group">
+          <label for="usr">Taille :</label>
+          <input class="form-control" type="text" placeholder="Taille de votre bureau">
+        </div>
+        <div>
+          <p>
+            Disponible du :
+          </p>
+          <input type="text" name="datedebut" id="datepicker" value="{{formatedDate}}">
+        </div>
+        <div>
+          <p>
+            Au :
+          </p>
+          <input type="text" name="datefin" id="datepickerFin" value="{{formatedDate}}">
+        </div>
+        <div class="form-group">
+          <label for="inputAddress">Adresse :
+          </label>
+          <input type="text" class="form-control" name="adresse" id="adresse" placeholder="05 rue du ballon ">
+        </div>
+        <div class="form-group">
+          <label for="inputCodePostal">Code postal :
+          </label>
+          <input class="form-control" type="text" placeholder="59000">
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="inputCity">Ville :
+            </label>
+            <input class="form-control" type="text" placeholder="59000">
+          </div>
+        </div>
+        <p>Photo du bien :
+        </p>
+        <div id="AjoutIm">
+          <input type="file" id="myFile" name="filename2">
+        </div>
+        <p>Liste du mobilier :</p>
+        <div class="form-group">
+          <textarea class="form-control" rows="5" id="mobilier" name="mobilier"></textarea>
+        </div>
+        <p>Description du bien :</p>
+        <div class="form-group">
+          <textarea class="form-control" rows="5" id="description" name="description"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
 
       </div>
     </body>
-    </div>
-  </form>
+  </div>
+</form>
+</div>
+</body>
 {% endblock %}
