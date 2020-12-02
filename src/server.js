@@ -65,7 +65,6 @@ function makeApp(mongoClient) {
   app.get("/", sessionParser, async (req, res) => {
     if (!req.session || !req.session.accessToken) {
       res.render("pages/home", { isLoggedIn: false });
-      console.log("you are not conected");
       return;
     }
     try {
@@ -73,7 +72,6 @@ function makeApp(mongoClient) {
         req.session.accessToken,
         process.env.JWT_ALGORITHM || ""
       );
-      console.log("you are conected");
       res.render("pages/home", { isLoggedIn: true });
     } catch (error) {
       req.session.destroy(() => {
@@ -83,15 +81,12 @@ function makeApp(mongoClient) {
     }
   });
 
-
   app.get("/locations", sessionParser, async (req, res) => {
     const annonces = await db.collection("Annonces").find().toArray();
     // res.json(annonce);
     // res.render("pages/location");
     if (!req.session || !req.session.accessToken) {
       res.render("pages/location", { annonces, isLoggedIn: false });
-      console.log("you are not conected");
-      console.log("you are not conected");
       return;
     }
     try {
@@ -99,7 +94,6 @@ function makeApp(mongoClient) {
         req.session.accessToken,
         process.env.JWT_ALGORITHM || ""
       );
-      console.log("you are conected");
       res.render("pages/location", { annonces, isLoggedIn: true });
     } catch (error) {
       req.session.destroy(() => {
@@ -108,8 +102,6 @@ function makeApp(mongoClient) {
       });
     }
   });
-  // res.render("pages/location", { annonces });
-  // });
 
   app.get("/locations/:location_id", sessionParser, async (req, res) => {
     const locationId = req.params.location_id;
@@ -122,7 +114,7 @@ function makeApp(mongoClient) {
         locationId,
         isLoggedIn: false,
       });
-      console.log("you are not conected");
+
       return;
     }
     try {
@@ -130,7 +122,6 @@ function makeApp(mongoClient) {
         req.session.accessToken,
         process.env.JWT_ALGORITHM || ""
       );
-      console.log("you are conected");
       res.render("pages/locationid", { annonce, locationId, isLoggedIn: true });
     } catch (error) {
       req.session.destroy(() => {
@@ -183,6 +174,7 @@ function makeApp(mongoClient) {
 
   // creation de l'envoi d'un mail pour à l'acheteur pour la location
   app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
+
     console.log("le mail de la personne connecté", req.session.mail);
     console.log("le id de ann", req.params.annonceid);
 
@@ -277,9 +269,11 @@ function makeApp(mongoClient) {
 
   //  annonce qui se retrouve sur la page la location (
   app.get("/api/creation_annonce", sessionParser, async (req, res) => {
-    console.log(req.session.mail);
+    const currentDate = new Date();
+    const formatedDate = currentDate.toISOString().slice(0, 10);
+
     if (!req.session || !req.session.accessToken) {
-      res.render("pages/FormCreatAnn", { isLoggedIn: false });
+      res.render("pages/FormCreatAnn", { isLoggedIn: false, formatedDate });
       console.log("you are not conected");
       return;
     }
@@ -288,11 +282,10 @@ function makeApp(mongoClient) {
         req.session.accessToken,
         process.env.JWT_ALGORITHM || ""
       );
-      console.log("you are conected");
-      res.render("pages/FormCreatAnn", { isLoggedIn: true });
+      res.render("pages/FormCreatAnn", { isLoggedIn: true, formatedDate });
     } catch (error) {
       req.session.destroy(() => {
-        res.render("pages/FormCreatAnn", { isLoggedIn: false });
+        res.render("pages/FormCreatAnn", { isLoggedIn: false, formatedDate });
         console.error(error);
       });
     }
@@ -317,7 +310,7 @@ function makeApp(mongoClient) {
 
     if (!req.session || !req.session.accessToken) {
       res.render("pages/profil", { users, isLoggedIn: false });
-      console.log("you are not conected");
+
       return;
     }
     try {
@@ -325,7 +318,7 @@ function makeApp(mongoClient) {
         req.session.accessToken,
         process.env.JWT_ALGORITHM || ""
       );
-      console.log("you are conected");
+
       res.render("pages/profil", { users, isLoggedIn: true });
     } catch (error) {
       req.session.destroy(() => {
@@ -449,7 +442,6 @@ function makeApp(mongoClient) {
     //     app.use(cookieSession({
     //     keys: ['secret1', 'secret2']
     // }));
-
     console.log(createdId);
 
     // console.log(createdId);
