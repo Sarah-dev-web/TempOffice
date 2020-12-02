@@ -4,17 +4,17 @@
   <link rel="stylesheet" href="/static/styles/locationid.css">
 {% endblock %} 
 {% block content %}
-  <div class="card p-5 mb-5 mt-5" id="game-main">
+  <div class="card p-5 mb-5 mt-5 border-info" id="game-main">
     <div class="row">
     {% if annonce.image %}
-      <div class="col-4 col-md-3">
-        <img src="{{annonce.image}}" alt="{{annonce.titre}} cover">
+      <div class="col-4 col-md-3 ">
+        <img class="img-thumbnail" src="{{annonce.image}}" alt="{{annonce.titre}} cover">
       </div>
     {%else%}
-      <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" alt="Pas d'image">
+      <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" class="img-thumbnail"alt="Pas d'image">
     {%endif%}
       <div class="col-8 row p-5 pt-4">
-        <h1 id="titre" class="pb-2">{{annonce.titre}}</h1>
+        <h2 id="titre" class="pb-2">{{annonce.titre}}</h2>
         <p id="description">{{annonce.description}}</p>
         <p id="description">{{annonce.mobilier}}</p>
         <small class="text-muted">
