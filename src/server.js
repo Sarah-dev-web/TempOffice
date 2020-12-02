@@ -55,7 +55,7 @@ function makeApp(mongoClient) {
       "https://fewlines.connect.prod.fewlines.tech/.well-known/openid-configuration",
     clientID: `${process.env.CLIENT_ID}`,
     clientSecret: `${process.env.CLIENT_SECRET}`,
-    redirectURI: "http://localhost:8080/auth/callback",
+    redirectURI: `${process.env.OAUTH_CALLBACK_URL}`,
     audience: `${process.env.AUDIENCE}`,
     scopes: ["openid", "email"],
   };
