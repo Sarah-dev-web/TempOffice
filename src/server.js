@@ -174,15 +174,14 @@ function makeApp(mongoClient) {
 
   // creation de l'envoi d'un mail pour à l'acheteur pour la location
   app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
-
     console.log("le mail de la personne connecté", req.session.mail);
     console.log("le id de ann", req.params.annonceid);
 
-    const vendeurData = await db.collection("Users").findOne({
-      annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] },
-    });
+    // const vendeurData = await db.collection("Users").findOne({
+    //   annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] },
+    // });
 
-    console.log("192", vendeurData);
+    // console.log("192", vendeurData);
     const Idacheteur = await db
       .collection("Users")
       .updateOne(
@@ -190,18 +189,20 @@ function makeApp(mongoClient) {
         { $push: { annonce_acheteur: req.params.annonceid } }
       );
 
-    const vendeurData = await db.collection("Users").findOne({ annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] } })
-    const createdId = result.insertedId;
+    const vendeurData = await db.collection("Users").findOne({
+      annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] },
+    });
+    // const createdId = result.insertedId;
 
     const adressAch = req.params.annonceid;
     // const Ach = await db.collection("Users").findOne({mail:logguedUserEmail});
     const Id = await db
       .collection("Users")
       .updateOne(
-        { mail: logguedUserEmail },
+        { mail: req.session.mail },
         { $push: { annonce_acheteur: req.params.annonceid } }
       );
-    console.log("192", vendeurData.mail)
+    console.log("192", vendeurData.mail);
 
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
