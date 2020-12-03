@@ -389,10 +389,53 @@ function makeApp(mongoClient) {
     res.redirect(authURLinString);
   });
 
-  app.get("/profil", async (req, res) => {
+
+
+
+  app.get("/profil", sessionParser, async (req, res) => {
+
     const users = await db.collection("Users").find().toArray();
     // res.json(annonce);
     // res.render("pages/location");
+
+    const profilUser = await db.collection("Users").findOne({ mail: req.session.mail })
+
+    // console.log(profilUser.annonce_vendeur);
+    // console.log(profilUser.annonce_acheteur);
+
+    // console.log(profilUser)
+    let tabAnnonceVendeur = [];
+    tabAnnonceVendeur.push(profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 1]);
+    tabAnnonceVendeur.push(profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 2]);
+    tabAnnonceVendeur.push(profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 3]);
+
+    let tabAnnonceAcheteur = [];
+    tabAnnonceAcheteur.push(profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 1]);
+    tabAnnonceAcheteur.push(profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 2]);
+    tabAnnonceAcheteur.push(profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 3]);
+
+    console.log("l425", tabAnnonceVendeur);
+    console.log("l426", tabAnnonceAcheteur);
+    // console.log("l426", tabAnnonceAcheteur);
+
+    const valueTabAnnVendeur1 = await db.collection("Annonces").findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[0]) })
+    const valueTabAnnVendeur2 = await db.collection("Annonces").findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[1]) })
+    const valueTabAnnVendeur3 = await db.collection("Annonces").findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[2]) })
+
+
+    // console.log(valueTabAnnVendeur3)
+    let recupValVendeur = [valueTabAnnVendeur1, valueTabAnnVendeur2, valueTabAnnVendeur3];
+
+    console.log("l428", recupValVendeur)
+    // console.log("l422", valueTabAnnVendeur)
+
+    const valueTabAnnAcheteur1 = await db.collection("Annonces").findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[0]) })
+    const valueTabAnnAcheteur2 = await db.collection("Annonces").findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[1]) })
+    const valueTabAnnAcheteur3 = await db.collection("Annonces").findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[2]) })
+
+    let recupValAcheteur = [valueTabAnnAcheteur1, valueTabAnnAcheteur2, valueTabAnnAcheteur3];
+
+    console.log("l437", recupValAcheteur)
 
     if (!req.session || !req.session.accessToken) {
       res.render("pages/profil", { users, isLoggedIn: false });
@@ -413,6 +456,14 @@ function makeApp(mongoClient) {
       });
     }
   });
+
+
+
+
+
+
+
+
   // res.render("pages/profil", { users });
 
   app.get("/api/logout", sessionParser, async (req, res) => {
@@ -428,7 +479,7 @@ function makeApp(mongoClient) {
     const token = await oauthClient.getTokensFromAuthorizationCode(
       stringiAuthCode
     );
-    console.log(token);
+    // console.log(token);
 
     //code qui permet de décoder le token
     const [header, payload] = token.id_token.split(".");
@@ -529,7 +580,7 @@ function makeApp(mongoClient) {
     //     app.use(cookieSession({
     //     keys: ['secret1', 'secret2']
     // }));
-    console.log(createdId);
+    // console.log(createdId);
 
     // console.log(createdId);
 
