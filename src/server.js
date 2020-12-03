@@ -378,7 +378,7 @@ function makeApp(mongoClient) {
   });
 
   app.get("/profil", sessionParser, async (req, res) => {
-    const users = await db.collection("Users").find().toArray();
+    const users = req.session.mail;
     // res.json(annonce);
     // res.render("pages/location");
 
@@ -465,7 +465,12 @@ function makeApp(mongoClient) {
         process.env.JWT_ALGORITHM || ""
       );
 
-      res.render("pages/profil", { users, isLoggedIn: true });
+      res.render("pages/profil", {
+        users,
+        isLoggedIn: true,
+        recupValVendeur,
+        recupValAcheteur,
+      });
     } catch (error) {
       req.session.destroy(() => {
         res.render("pages/profil", { users, isLoggedIn: false });
@@ -479,7 +484,7 @@ function makeApp(mongoClient) {
   app.get("/api/logout", sessionParser, async (req, res) => {
     if (req.session) {
       req.session.destroy(() => {
-        res.render("pages/home", { isLoggedIn: false });
+        res.redirect("/");
       });
     }
   });
