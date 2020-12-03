@@ -184,7 +184,7 @@ function makeApp(mongoClient) {
     const mailOptions = {
       from: "tempoffice.contact@gmail.com",
       to: req.session.mail,
-      subject: "Sending Email using Node.js",
+      subject: "Confirmation d'ajout",
       text: "vous avez ajouter une annonce!",
     };
     console.log(req.session.mail);
@@ -219,6 +219,9 @@ function makeApp(mongoClient) {
     const vendeurData = await db.collection("Users").findOne({
       annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] },
     });
+    const acheteurData = await db
+      .collection("Users")
+      .findOne({ mail: req.session.mail });
     // const createdId = result.insertedId;
 
     const adressAch = req.params.annonceid;
@@ -245,20 +248,25 @@ function makeApp(mongoClient) {
     const mailOptionsAttente = {
       from: "tempoffice.contact@gmail.com",
       to: req.session.mail,
-      subject: "Sending Email using Node.js",
+      subject: "Attente de confirmation",
       text:
-        "vous avez demander à louer ce bureau! \n veillez attendre la confirmation du vendeur ",
+        "vous avez demander à louer ce bureau! \n Veuillez attendre la confirmation du vendeur ",
     };
 
     // Retrouver le mail de celui qui a creer l'annonce
     // Lui envoyer le mail de confirmation
-
+    // console.log("l255", vendeurData);
+    // console.log("l256", acheteurData);
     const mailOptionsConfirmation = {
       from: "tempoffice.contact@gmail.com",
       to: vendeurData.mail, // a remplacer par l'adresse mail de celui qui a creer l'annonce
-      subject: "Sending Email using Node.js",
-      text: "Veuillez confirmer la demande de location. ",
+      subject: "Demande de Confirmation",
+      html: `<div> Veuillez confirmer la demande de location. <a href ='http://localhost:8080/api/confirmation?v=${vendeurData._id}&a=${acheteurData._id}'>Confirmation </a> </div>`,
     };
+    // console.log(
+    //   "ll264",
+    //   "http://locahost:8080/api/confirmation?v=Vincent&a=Anne"
+    // );
 
     const resultatAttente = await transporter.sendMail(
       mailOptionsAttente,
@@ -293,6 +301,48 @@ function makeApp(mongoClient) {
     }
 
     res.redirect("/");
+  });
+
+  app.get("/api/confirmation", sessionParser, async (req, res) => {
+    console.log(req.query.a);
+    //Recuperer a et v , trouver le user a partir de l'id
+    const userValidation = await db
+      .collection("Users")
+      .findOne({ _id: MongoClient.ObjectId(req.query.a) });
+    console.log("l274", userValidation.mail);
+    //trouver l'email de l'user .mail
+    //Envoi du mail de validation
+
+    const transporter = nodemailer.createTransport({
+      service: process.env.GMAIL_SERVICE_NAME,
+      host: process.env.GMAIL_SERVICE_HOST,
+      secure: process.env.GMAIL_SERVICE_SECURE,
+      port: process.env.GMAIL_SERVICE_PORT,
+      auth: {
+        user: process.env.GMAIL_USER_NAME,
+        pass: process.env.GMAIL_USER_PASSWORD,
+      },
+    });
+
+    const mailOptionsValide = {
+      from: "tempoffice.contact@gmail.com",
+      to: userValidation.mail,
+      subject: "Mail de confirmation du vendeur",
+      text: "Votre demande de location à été bien confirmé ",
+    };
+
+    const resulValidation = await transporter.sendMail(
+      mailOptionsValide,
+      function (error, info) {
+        if (error) {
+          return "erreur";
+        } else {
+          return "Mail bien envoyé";
+        }
+      }
+    );
+
+    res.json("Merci pour votre confirmation.");
   });
 
   //  annonce qui se retrouve sur la page la location (
