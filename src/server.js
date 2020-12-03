@@ -37,7 +37,7 @@ function makeApp(mongoClient) {
   let host = "http://localhost:8080"
 
   if (process.env.NODE_ENV === "production") {
-    host = "https://www.tempoffice.herokuapp.com"
+    host = "https://tempoffice.herokuapp.com"
   }
 
   if (process.env.NODE_ENV === "production") {
