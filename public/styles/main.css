@@ -1,14 +1,26 @@
-.jumbotron {
+/* .jumbotron {
   padding: 2rem 1rem;
   margin-bottom: 2rem;
   background-color: #FFFFFF;
   border-radius: .3rem;
   background:transparent;
- }
+ } */
+ 
+.text{
 
+    color:  #45e0d8
+    /* background: #8eb1db; */
+  
+}
+div {
+  width: 120px;
+  height: 120px;
+}
 .body {
+
+  
   background-image: url(/assets/images/retro-bg.jpg);
-  background-size: cover !important;
+  background-size: cover ;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
@@ -20,32 +32,10 @@
   width: 100%;
   height: 100vh;
   overflow: scroll;
+  
+  
+
 }
 
-#wtf {
-  height: calc(100vh - 456px);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-
-
-footer {
-  padding: 1rem !important;
-  background-color: #141414 !important;
-  color: white !important;
-  width: 100%;
-  text-align: center;
-}
-
-.card-columns {
-  @include media-breakpoint-only(lg) {
-    column-count: 4;
-  }
-  /* @include media-breakpoint-only(xl) {
-    column-count: 5;
-  } */
-}
 
 
