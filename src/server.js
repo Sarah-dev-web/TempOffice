@@ -634,7 +634,7 @@ function makeApp(mongoClient) {
           );
         res.status(200).redirect(`/locations/${createdId}`);
       }
-    }
+    
   );
 
 
