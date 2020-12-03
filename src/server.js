@@ -8,13 +8,13 @@ const mongoSession = require("connect-mongo");
 const session = require("express-session");
 const MongoClient = require("mongodb");
 const nodemailer = require("nodemailer");
-var multer  = require('multer');
+var multer = require("multer");
 const http = require("http");
 const path = require("path");
 const fs = require("fs");
 
 const upload = multer({
-  dest: path.join(__dirname, "../public/uploads")
+  dest: path.join(__dirname, "../public/uploads"),
 
   // you might also want to set some limits: https://github.com/expressjs/multer#limits
 });
@@ -44,10 +44,10 @@ function makeApp(mongoClient) {
 
   const MongoStore = mongoSession(session);
 
-  let host = "http://localhost:8080"
+  let host = "http://localhost:8080";
 
   if (process.env.NODE_ENV === "production") {
-    host = "https://tempoffice.herokuapp.com"
+    host = "https://tempoffice.herokuapp.com";
   }
 
   if (process.env.NODE_ENV === "production") {
@@ -157,9 +157,6 @@ function makeApp(mongoClient) {
       });
     }
   });
-  // res.render("pages/locationid", { annonce, locationId });
-  // });
-  // PRENDRE L'INDEX DE L'ID POUR LEUR PREPARER UN BEAU BOUTON
 
   app.post("/locations/:location_id", async (req, res) => {
     res.send("la location 1 POST");
@@ -183,7 +180,6 @@ function makeApp(mongoClient) {
       subject: "Confirmation d'ajout",
       text: "vous avez ajouter une annonce!",
     };
-    console.log(req.session.mail);
 
     // req.session.mail
 
@@ -197,14 +193,6 @@ function makeApp(mongoClient) {
 
   // creation de l'envoi d'un mail pour à l'acheteur pour la location
   app.get("/api/sendMailAch/:annonceid", sessionParser, async (req, res) => {
-    console.log("le mail de la personne connecté", req.session.mail);
-    console.log("le id de ann", req.params.annonceid);
-
-    // const vendeurData = await db.collection("Users").findOne({
-    //   annonce_vendeur: { $all: [MongoClient.ObjectId(req.params.annonceid)] },
-    // });
-
-    // console.log("192", vendeurData);
     const Idacheteur = await db
       .collection("Users")
       .updateOne(
@@ -218,17 +206,15 @@ function makeApp(mongoClient) {
     const acheteurData = await db
       .collection("Users")
       .findOne({ mail: req.session.mail });
-    // const createdId = result.insertedId;
 
     const adressAch = req.params.annonceid;
-    // const Ach = await db.collection("Users").findOne({mail:logguedUserEmail});
+
     const Id = await db
       .collection("Users")
       .updateOne(
         { mail: req.session.mail },
         { $push: { annonce_acheteur: req.params.annonceid } }
       );
-    console.log("192", vendeurData.mail);
 
     const transporter = nodemailer.createTransport({
       service: process.env.GMAIL_SERVICE_NAME,
@@ -251,18 +237,13 @@ function makeApp(mongoClient) {
 
     // Retrouver le mail de celui qui a creer l'annonce
     // Lui envoyer le mail de confirmation
-    // console.log("l255", vendeurData);
-    // console.log("l256", acheteurData);
+
     const mailOptionsConfirmation = {
       from: "tempoffice.contact@gmail.com",
       to: vendeurData.mail, // a remplacer par l'adresse mail de celui qui a creer l'annonce
       subject: "Demande de Confirmation",
       html: `<div> Veuillez confirmer la demande de location. <a href ='${host}/api/confirmation?v=${vendeurData._id}&a=${acheteurData._id}'>Confirmation </a> </div>`,
     };
-    // console.log(
-    //   "ll264",
-    //   "http://locahost:8080/api/confirmation?v=Vincent&a=Anne"
-    // );
 
     const resultatAttente = await transporter.sendMail(
       mailOptionsAttente,
@@ -286,8 +267,6 @@ function makeApp(mongoClient) {
       }
     );
 
-    console.log(resultatAttente, resultatConfirmation);
-
     if (resultatAttente === "erreur" || resultatConfirmation === "erreur") {
       res.json({
         message: "Erreur dans l'un des mails",
@@ -300,12 +279,11 @@ function makeApp(mongoClient) {
   });
 
   app.get("/api/confirmation", sessionParser, async (req, res) => {
-    console.log(req.query.a);
     //Recuperer a et v , trouver le user a partir de l'id
     const userValidation = await db
       .collection("Users")
       .findOne({ _id: MongoClient.ObjectId(req.query.a) });
-    console.log("l274", userValidation.mail);
+
     //trouver l'email de l'user .mail
     //Envoi du mail de validation
 
@@ -348,7 +326,7 @@ function makeApp(mongoClient) {
 
     if (!req.session || !req.session.accessToken) {
       res.render("pages/FormCreatAnn", { isLoggedIn: false, formatedDate });
-      console.log("you are not conected");
+
       return;
     }
     try {
@@ -365,11 +343,6 @@ function makeApp(mongoClient) {
     }
   });
 
-  // res.render("pages/FormCreatAnn");
-
-  //  création de l'annonce par le vendeur (
-  // app.post("/api/creation_annonce", async (req, res) => { });
-
   app.get("/api/login", async (req, res) => {
     const authURL = await oauthClient.getAuthorizationURL("state");
 
@@ -379,8 +352,6 @@ function makeApp(mongoClient) {
 
   app.get("/profil", async (req, res) => {
     const users = await db.collection("Users").find().toArray();
-    // res.json(annonce);
-    // res.render("pages/location");
 
     if (!req.session || !req.session.accessToken) {
       res.render("pages/profil", { users, isLoggedIn: false });
@@ -401,7 +372,6 @@ function makeApp(mongoClient) {
       });
     }
   });
-  // res.render("pages/profil", { users });
 
   app.get("/api/logout", sessionParser, async (req, res) => {
     if (req.session) {
@@ -416,7 +386,6 @@ function makeApp(mongoClient) {
     const token = await oauthClient.getTokensFromAuthorizationCode(
       stringiAuthCode
     );
-    console.log(token);
 
     //code qui permet de décoder le token
     const [header, payload] = token.id_token.split(".");
@@ -474,19 +443,14 @@ function makeApp(mongoClient) {
   });
 
   app.post(
-    "/api/creation_annonce", 
-    sessionParser, 
+    "/api/creation_annonce",
+    sessionParser,
     upload.single("file"),
     async (req, res) => {
-
-      if(req.file){
-
+      if (req.file) {
         const tempPath = req.file.path;
-        const newPath =  tempPath+".png"
-        const dbPath = "/static/uploads/" + req.file.filename + ".png"
-
-        console.log(req.file)
-        console.log(req.body)
+        const newPath = tempPath + ".png";
+        const dbPath = "/static/uploads/" + req.file.filename + ".png";
 
         const dataForm = req.body;
         const annonce = {
@@ -508,7 +472,7 @@ function makeApp(mongoClient) {
         const createdId = result.insertedId;
 
         const logguedUserEmail = req.session.mail;
-        // const user = await db.collection("users").findOne({mail:logguedUserEmail});
+
         const Id = await db
           .collection("Users")
           .updateOne(
@@ -516,25 +480,15 @@ function makeApp(mongoClient) {
             { $push: { annonce_vendeur: createdId } }
           );
 
-    
         if (path.extname(req.file.originalname).toLowerCase() === ".png") {
           fs.rename(tempPath, newPath, (err) => {
-
-            console.log("if");
-
             res.status(200).redirect(`/locations/${createdId}`);
-
           });
         } else {
           fs.unlink(tempPath, (err) => {
-
-            console.log("Image must be PNG.")
-    
             res.status(403).redirect(`/locations/${createdId}`);
-
           });
         }
-
       } else {
         const dataForm = req.body;
         const annonce = {
@@ -549,51 +503,26 @@ function makeApp(mongoClient) {
           ville: dataForm.ville,
           mobilier: dataForm.mobilier,
           description: dataForm.description,
-        }
-          const result = await db.collection("Annonces").insertOne(annonce);
-          const createdId = result.insertedId;
-  
-          const logguedUserEmail = req.session.mail;
-          // const user = await db.collection("users").findOne({mail:logguedUserEmail});
-          const Id = await db
-            .collection("Users")
-            .updateOne(
-              { mail: logguedUserEmail },
-              { $push: { annonce_vendeur: createdId } }
-            );
-            res.status(200).redirect(`/locations/${createdId}`);
+        };
+        const result = await db.collection("Annonces").insertOne(annonce);
+        const createdId = result.insertedId;
 
+        const logguedUserEmail = req.session.mail;
+
+        const Id = await db
+          .collection("Users")
+          .updateOne(
+            { mail: logguedUserEmail },
+            { $push: { annonce_vendeur: createdId } }
+          );
+        res.status(200).redirect(`/locations/${createdId}`);
       }
-    // }
-  // );
-      
-      
-
-      //console.log(Id);
-      // trouver le user dans la collection Users
-
-      //console.log("j'ai reussi");
-
-      // trouver dans mongodb comment patch un tableau de donnee
-      // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
-
-      // });
-
-      //     var cookieSession = require('cookie-session');
-      //     app.use(cookieSession({
-      //     keys: ['secret1', 'secret2']
-      // }));
-
-      // console.log(createdId);
-
-      // res.end("");
-  });
-  // POUR L'INSTANT IL REDIRIGE VERS HOME
-  // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
+    }
+  );
 
   app.post("/locations", async (req, res) => {
     // on recherche les données saisies par l'user dans le formulaire
-    const dbPath = "/static/uploads/" + req.file.filename + ".png"
+    const dbPath = "/static/uploads/" + req.file.filename + ".png";
 
     const dataForm = req.body;
     const annonce = {
@@ -610,17 +539,14 @@ function makeApp(mongoClient) {
       checked: dataForm.checked,
       description: dataForm.description,
       image: dbPath,
-
     };
-    // console.log("DATAFORM", dataForm);
+
     // on insère les données saisies de l'user dans la BD
     db.collection("Annonces").insertOne({ annonce });
 
     res.render("pages/location");
   });
-  //
 
-  //
   app.get("/api/login", async (req, res) => {
     res.send("result");
   });
@@ -631,9 +557,7 @@ function makeApp(mongoClient) {
 
   // This should be the last call to `app` in this file
   app.use("/static", express.static("public"));
-  app.use((error, req, res) => {
-    // console.error(error);
-  });
+  app.use((error, req, res) => {});
 
   return app;
 }
