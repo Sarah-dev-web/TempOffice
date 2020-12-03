@@ -8,6 +8,16 @@ const mongoSession = require("connect-mongo");
 const session = require("express-session");
 const MongoClient = require("mongodb");
 const nodemailer = require("nodemailer");
+var multer  = require('multer');
+const http = require("http");
+const path = require("path");
+const fs = require("fs");
+
+const upload = multer({
+  dest: path.join(__dirname, "../public/uploads")
+
+  // you might also want to set some limits: https://github.com/expressjs/multer#limits
+});
 
 const clientWantsJson = (request) =>
   request.get("accept") === "application/json";
@@ -96,30 +106,8 @@ function makeApp(mongoClient) {
       });
     }
   });
-  app.get("/locations", async (req, res) => {
-    const annonces = await db.collection("Annonces").find().toArray();
-    if (!req.session || !req.session.accessToken) {
-      res.render("pages/location", { annonces, isLoggedIn: false });
-      return;
-    }
-    try {
-      await oauthClient.verifyJWT(
-        req.session.accessToken,
-        process.env.JWT_ALGORITHM || ""
-      );
-      res.render("pages/location", { annonces, isLoggedIn: true });
-    } catch (error) {
-      req.session.destroy(() => {
-        res.render("pages/location", { annonces, isLoggedIn: false });
-        console.error(error);
-      });
-    }
-  });
-
   app.get("/locations", sessionParser, async (req, res) => {
     const annonces = await db.collection("Annonces").find().toArray();
-    // res.json(annonce);
-    // res.render("pages/location");
     if (!req.session || !req.session.accessToken) {
       res.render("pages/location", { annonces, isLoggedIn: false });
       return;
@@ -485,61 +473,128 @@ function makeApp(mongoClient) {
     res.redirect("/");
   });
 
-  app.post("/api/creation_annonce", sessionParser, async (req, res) => {
-    const dataForm = req.body;
-    const annonce = {
-      email: dataForm.email,
-      titre: dataForm.titre,
-      prix: dataForm.prix,
-      taille: dataForm.taille,
-      datedebut: dataForm.datedebut,
-      datefin: dataForm.datefin,
-      adresse: dataForm.adresse,
-      codepostal: dataForm.codepostal,
-      image: dataForm.image,
-      ville: dataForm.ville,
-      mobilier: dataForm.mobilier,
-      description: dataForm.description,
-    };
+  app.post(
+    "/api/creation_annonce", 
+    sessionParser, 
+    upload.single("file"),
+    async (req, res) => {
 
-    const result = await db.collection("Annonces").insertOne(annonce);
-    const createdId = result.insertedId;
+      if(req.file){
 
-    const logguedUserEmail = req.session.mail;
-    // const user = await db.collection("users").findOne({mail:logguedUserEmail});
-    const Id = await db
-      .collection("Users")
-      .updateOne(
-        { mail: logguedUserEmail },
-        { $push: { annonce_vendeur: createdId } }
-      );
+        const tempPath = req.file.path;
+        const newPath =  tempPath+".png"
+        const dbPath = "/static/uploads/" + req.file.filename + ".png"
 
-    //console.log(Id);
-    // trouver le user dans la collection Users
+        console.log(req.file)
+        console.log(req.body)
 
-    //console.log("j'ai reussi");
+        const dataForm = req.body;
+        const annonce = {
+          email: dataForm.email,
+          titre: dataForm.titre,
+          prix: dataForm.prix,
+          taille: dataForm.taille,
+          datedebut: dataForm.datedebut,
+          datefin: dataForm.datefin,
+          adresse: dataForm.adresse,
+          codepostal: dataForm.codepostal,
+          image: dbPath,
+          ville: dataForm.ville,
+          mobilier: dataForm.mobilier,
+          description: dataForm.description,
+        };
 
-    // trouver dans mongodb comment patch un tableau de donnee
-    // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
+        const result = await db.collection("Annonces").insertOne(annonce);
+        const createdId = result.insertedId;
 
-    res.redirect(`/locations/${createdId}`);
-    // });
+        const logguedUserEmail = req.session.mail;
+        // const user = await db.collection("users").findOne({mail:logguedUserEmail});
+        const Id = await db
+          .collection("Users")
+          .updateOne(
+            { mail: logguedUserEmail },
+            { $push: { annonce_vendeur: createdId } }
+          );
 
-    //     var cookieSession = require('cookie-session');
-    //     app.use(cookieSession({
-    //     keys: ['secret1', 'secret2']
-    // }));
-    console.log(createdId);
+    
+        if (path.extname(req.file.originalname).toLowerCase() === ".png") {
+          fs.rename(tempPath, newPath, (err) => {
 
-    // console.log(createdId);
+            console.log("if");
 
-    res.end("");
+            res.status(200).redirect(`/locations/${createdId}`);
+
+          });
+        } else {
+          fs.unlink(tempPath, (err) => {
+
+            console.log("Image must be PNG.")
+    
+            res.status(403).redirect(`/locations/${createdId}`);
+
+          });
+        }
+
+      } else {
+        const dataForm = req.body;
+        const annonce = {
+          email: dataForm.email,
+          titre: dataForm.titre,
+          prix: dataForm.prix,
+          taille: dataForm.taille,
+          datedebut: dataForm.datedebut,
+          datefin: dataForm.datefin,
+          adresse: dataForm.adresse,
+          codepostal: dataForm.codepostal,
+          ville: dataForm.ville,
+          mobilier: dataForm.mobilier,
+          description: dataForm.description,
+        }
+          const result = await db.collection("Annonces").insertOne(annonce);
+          const createdId = result.insertedId;
+  
+          const logguedUserEmail = req.session.mail;
+          // const user = await db.collection("users").findOne({mail:logguedUserEmail});
+          const Id = await db
+            .collection("Users")
+            .updateOne(
+              { mail: logguedUserEmail },
+              { $push: { annonce_vendeur: createdId } }
+            );
+            res.status(200).redirect(`/locations/${createdId}`);
+
+      }
+    // }
+  // );
+      
+      
+
+      //console.log(Id);
+      // trouver le user dans la collection Users
+
+      //console.log("j'ai reussi");
+
+      // trouver dans mongodb comment patch un tableau de donnee
+      // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
+
+      // });
+
+      //     var cookieSession = require('cookie-session');
+      //     app.use(cookieSession({
+      //     keys: ['secret1', 'secret2']
+      // }));
+
+      // console.log(createdId);
+
+      // res.end("");
   });
   // POUR L'INSTANT IL REDIRIGE VERS HOME
   // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
 
   app.post("/locations", async (req, res) => {
     // on recherche les données saisies par l'user dans le formulaire
+    const dbPath = "/static/uploads/" + req.file.filename + ".png"
+
     const dataForm = req.body;
     const annonce = {
       titre: dataForm.titre,
@@ -554,6 +609,8 @@ function makeApp(mongoClient) {
       mobilier: dataForm.mobilier,
       checked: dataForm.checked,
       description: dataForm.description,
+      image: dbPath,
+
     };
     // console.log("DATAFORM", dataForm);
     // on insère les données saisies de l'user dans la BD
