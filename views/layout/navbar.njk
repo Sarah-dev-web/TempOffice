@@ -1,56 +1,53 @@
 {% block css %}
-<link rel="stylesheet" href="/static/styles/navbar.css">
+  <link rel="stylesheet" href="/static/styles/navbar.css">
 
-<nav class="navbar navbar-expand-lg fond", id="header">
+  <nav class="navbar navbar-expand-lg fond" ,="," id="header">
 
-      <a class="mx-3" href="/"> 
-        <img src="/static/images/logo.svg">
-      </a>
-          {# <span class="navbar-toggler-icon"></span> #}
- 
+    <a class="mx-3" href="/">
+      <img src="/static/images/logo.svg">
+    </a>
+    {# <span class="navbar-toggler-icon"></span> #}
+
     <div >
-        <form class="form-inline " >
-          <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-          <button class="btn btn-outline special_button_color  my-2 my-sm-0",type="submit">Search</button>
-        </form>
+      <form class="form-inline ">
+        <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline special_button_color  my-2 my-sm-0" ,type="submit">Search</button>
+      </form>
     </div>
-  
 
-    <div class="collapse navbar-collapse d-flex justify-content-end " >
+    <div class="collapse navbar-collapse d-flex justify-content-end ">
       <ul class="navbar-nav ">
-        <li class="nav-item text" >
+        <li class="nav-item text">
           <a class="nav-link title special_button_color" href="/locations">Locations</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link title special_button_color" href="/">Message</a>
-        </li>
+        {% if isLoggedIn %}
+          <li class="nav-item">
+            <a class="nav-link title special_button_color" href="/profil">Profil</a>
+          </li>
+        {% else %}
+        {% endif %}
         <li class="nav-item text">
-        
+
           {% if isLoggedIn%}
             <a class="nav-link titl special_button_color" href="/api/creation_annonce">Proposer ma salle</a>
-            {% else %}
-            {% endif %}     
-         
+          {% else %}
+          {% endif %}
+
         </li>
         <li class="nav-item text">
-            {% if isLoggedIn%}
+          {% if isLoggedIn%}
             <a class="nav-link title special_button_color" href="/api/logout">
               Logout
-              </a>
-            {% else %}
-              <a class="nav-link title special_button_color" href="/api/login">
-                Login
-              </a>
+            </a>
+          {% else %}
+            <a class="nav-link title special_button_color" href="/api/login">
+              Login
+            </a>
 
-            {% endif %}
+          {% endif %}
         </li>
       </ul>
     </div>
-  
-  
-          
-          
-            
-     
-</nav>
+
+  </nav>
 {% endblock %}
