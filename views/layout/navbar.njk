@@ -3,7 +3,9 @@
 
 <nav class="navbar navbar-expand-lg fond", id="header">
 
-      <a class="mx-3" href="/">TempOffice</a>
+      <a class="mx-3" href="/"> 
+        <img src="/static/images/logo.svg">
+      </a>
           {# <span class="navbar-toggler-icon"></span> #}
  
     <div >
@@ -22,10 +24,10 @@
         <li class="nav-item">
           <a class="nav-link title special_button_color" href="/">Message</a>
         </li>
-        <li class="nav-link title">
+        <li class="nav-item text">
         
           {% if isLoggedIn%}
-            <a href="/api/creation_annonce">Proposer ma salle</a>
+            <a class="nav-link titl special_button_color" href="/api/creation_annonce">Proposer ma salle</a>
             {% else %}
             {% endif %}     
          
