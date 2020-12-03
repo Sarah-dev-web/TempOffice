@@ -33,9 +33,17 @@ function makeApp(mongoClient) {
   app.set("view engine", "njk");
 
   const MongoStore = mongoSession(session);
+
+  let host = "http://localhost:8080"
+
+  if (process.env.NODE_ENV === "production") {
+    host = "https://www.tempoffice.herokuapp.com"
+  }
+
   if (process.env.NODE_ENV === "production") {
     app.set("trust proxy", 1);
   }
+
   const sessionParser = session({
     secret: `${process.env.SESSIONSECRET}`,
     name: "tempoffice",
@@ -261,7 +269,7 @@ function makeApp(mongoClient) {
       from: "tempoffice.contact@gmail.com",
       to: vendeurData.mail, // a remplacer par l'adresse mail de celui qui a creer l'annonce
       subject: "Demande de Confirmation",
-      html: `<div> Veuillez confirmer la demande de location. <a href ='http://localhost:8080/api/confirmation?v=${vendeurData._id}&a=${acheteurData._id}'>Confirmation </a> </div>`,
+      html: `<div> Veuillez confirmer la demande de location. <a href ='${host}/api/confirmation?v=${vendeurData._id}&a=${acheteurData._id}'>Confirmation </a> </div>`,
     };
     // console.log(
     //   "ll264",
