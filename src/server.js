@@ -8,13 +8,13 @@ const mongoSession = require("connect-mongo");
 const session = require("express-session");
 const MongoClient = require("mongodb");
 const nodemailer = require("nodemailer");
-var multer  = require('multer');
+var multer = require("multer");
 const http = require("http");
 const path = require("path");
 const fs = require("fs");
 
 const upload = multer({
-  dest: path.join(__dirname, "../public/uploads")
+  dest: path.join(__dirname, "../public/uploads"),
 
   // you might also want to set some limits: https://github.com/expressjs/multer#limits
 });
@@ -44,10 +44,10 @@ function makeApp(mongoClient) {
 
   const MongoStore = mongoSession(session);
 
-  let host = "http://localhost:8080"
+  let host = "http://localhost:8080";
 
   if (process.env.NODE_ENV === "production") {
-    host = "https://tempoffice.herokuapp.com"
+    host = "https://tempoffice.herokuapp.com";
   }
 
   if (process.env.NODE_ENV === "production") {
@@ -377,10 +377,82 @@ function makeApp(mongoClient) {
     res.redirect(authURLinString);
   });
 
-  app.get("/profil", async (req, res) => {
+  app.get("/profil", sessionParser, async (req, res) => {
     const users = await db.collection("Users").find().toArray();
     // res.json(annonce);
     // res.render("pages/location");
+
+    const profilUser = await db
+      .collection("Users")
+      .findOne({ mail: req.session.mail });
+
+    // console.log(profilUser.annonce_vendeur);
+    // console.log(profilUser.annonce_acheteur);
+
+    // console.log(profilUser)
+    let tabAnnonceVendeur = [];
+    tabAnnonceVendeur.push(
+      profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 1]
+    );
+    tabAnnonceVendeur.push(
+      profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 2]
+    );
+    tabAnnonceVendeur.push(
+      profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 3]
+    );
+
+    let tabAnnonceAcheteur = [];
+    tabAnnonceAcheteur.push(
+      profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 1]
+    );
+    tabAnnonceAcheteur.push(
+      profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 2]
+    );
+    tabAnnonceAcheteur.push(
+      profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 3]
+    );
+
+    console.log("l425", tabAnnonceVendeur);
+    console.log("l426", tabAnnonceAcheteur);
+    // console.log("l426", tabAnnonceAcheteur);
+
+    const valueTabAnnVendeur1 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[0]) });
+    const valueTabAnnVendeur2 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[1]) });
+    const valueTabAnnVendeur3 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[2]) });
+
+    // console.log(valueTabAnnVendeur3)
+    let recupValVendeur = [
+      valueTabAnnVendeur1,
+      valueTabAnnVendeur2,
+      valueTabAnnVendeur3,
+    ];
+
+    console.log("l428", recupValVendeur);
+    // console.log("l422", valueTabAnnVendeur)
+
+    const valueTabAnnAcheteur1 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[0]) });
+    const valueTabAnnAcheteur2 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[1]) });
+    const valueTabAnnAcheteur3 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[2]) });
+
+    let recupValAcheteur = [
+      valueTabAnnAcheteur1,
+      valueTabAnnAcheteur2,
+      valueTabAnnAcheteur3,
+    ];
+
+    console.log("l437", recupValAcheteur);
 
     if (!req.session || !req.session.accessToken) {
       res.render("pages/profil", { users, isLoggedIn: false });
@@ -401,6 +473,7 @@ function makeApp(mongoClient) {
       });
     }
   });
+
   // res.render("pages/profil", { users });
 
   app.get("/api/logout", sessionParser, async (req, res) => {
@@ -416,7 +489,7 @@ function makeApp(mongoClient) {
     const token = await oauthClient.getTokensFromAuthorizationCode(
       stringiAuthCode
     );
-    console.log(token);
+    // console.log(token);
 
     //code qui permet de décoder le token
     const [header, payload] = token.id_token.split(".");
@@ -474,19 +547,17 @@ function makeApp(mongoClient) {
   });
 
   app.post(
-    "/api/creation_annonce", 
-    sessionParser, 
+    "/api/creation_annonce",
+    sessionParser,
     upload.single("file"),
     async (req, res) => {
-
-      if(req.file){
-
+      if (req.file) {
         const tempPath = req.file.path;
-        const newPath =  tempPath+".png"
-        const dbPath = "/static/uploads/" + req.file.filename + ".png"
+        const newPath = tempPath + ".png";
+        const dbPath = "/static/uploads/" + req.file.filename + ".png";
 
-        console.log(req.file)
-        console.log(req.body)
+        console.log(req.file);
+        console.log(req.body);
 
         const dataForm = req.body;
         const annonce = {
@@ -516,25 +587,19 @@ function makeApp(mongoClient) {
             { $push: { annonce_vendeur: createdId } }
           );
 
-    
         if (path.extname(req.file.originalname).toLowerCase() === ".png") {
           fs.rename(tempPath, newPath, (err) => {
-
             console.log("if");
 
             res.status(200).redirect(`/locations/${createdId}`);
-
           });
         } else {
           fs.unlink(tempPath, (err) => {
+            console.log("Image must be PNG.");
 
-            console.log("Image must be PNG.")
-    
             res.status(403).redirect(`/locations/${createdId}`);
-
           });
         }
-
       } else {
         const dataForm = req.body;
         const annonce = {
@@ -549,25 +614,22 @@ function makeApp(mongoClient) {
           ville: dataForm.ville,
           mobilier: dataForm.mobilier,
           description: dataForm.description,
-        }
-          const result = await db.collection("Annonces").insertOne(annonce);
-          const createdId = result.insertedId;
-  
-          const logguedUserEmail = req.session.mail;
-          // const user = await db.collection("users").findOne({mail:logguedUserEmail});
-          const Id = await db
-            .collection("Users")
-            .updateOne(
-              { mail: logguedUserEmail },
-              { $push: { annonce_vendeur: createdId } }
-            );
-            res.status(200).redirect(`/locations/${createdId}`);
+        };
+        const result = await db.collection("Annonces").insertOne(annonce);
+        const createdId = result.insertedId;
 
+        const logguedUserEmail = req.session.mail;
+        // const user = await db.collection("users").findOne({mail:logguedUserEmail});
+        const Id = await db
+          .collection("Users")
+          .updateOne(
+            { mail: logguedUserEmail },
+            { $push: { annonce_vendeur: createdId } }
+          );
+        res.status(200).redirect(`/locations/${createdId}`);
       }
-    // }
-  // );
-      
-      
+      // }
+      // );
 
       //console.log(Id);
       // trouver le user dans la collection Users
@@ -577,7 +639,11 @@ function makeApp(mongoClient) {
       // trouver dans mongodb comment patch un tableau de donnee
       // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
 
-      // });
+      //     var cookieSession = require('cookie-session');
+      //     app.use(cookieSession({
+      //     keys: ['secret1', 'secret2']
+      // }));
+      // console.log(createdId);
 
       //     var cookieSession = require('cookie-session');
       //     app.use(cookieSession({
@@ -587,13 +653,14 @@ function makeApp(mongoClient) {
       // console.log(createdId);
 
       // res.end("");
-  });
+    }
+  );
   // POUR L'INSTANT IL REDIRIGE VERS HOME
   // PAS CERTAIN QUE LES PHOTOS FONCTIONNENT // je te confirme les photos ne sont pas reprises
 
   app.post("/locations", async (req, res) => {
     // on recherche les données saisies par l'user dans le formulaire
-    const dbPath = "/static/uploads/" + req.file.filename + ".png"
+    const dbPath = "/static/uploads/" + req.file.filename + ".png";
 
     const dataForm = req.body;
     const annonce = {
@@ -610,7 +677,6 @@ function makeApp(mongoClient) {
       checked: dataForm.checked,
       description: dataForm.description,
       image: dbPath,
-
     };
     // console.log("DATAFORM", dataForm);
     // on insère les données saisies de l'user dans la BD
