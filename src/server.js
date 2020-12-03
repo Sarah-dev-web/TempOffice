@@ -350,8 +350,80 @@ function makeApp(mongoClient) {
     res.redirect(authURLinString);
   });
 
-  app.get("/profil", async (req, res) => {
-    const users = await db.collection("Users").find().toArray();
+
+  app.get("/profil", sessionParser, async (req, res) => {
+    const users = req.session.mail;
+    // res.json(annonce);
+    // res.render("pages/location");
+
+
+    const profilUser = await db
+      .collection("Users")
+      .findOne({ mail: req.session.mail });
+
+    let tabAnnonceVendeur = [];
+    tabAnnonceVendeur.push(
+      profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 1]
+    );
+    tabAnnonceVendeur.push(
+      profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 2]
+    );
+    tabAnnonceVendeur.push(
+      profilUser.annonce_vendeur[profilUser.annonce_vendeur.length - 3]
+    );
+
+    let tabAnnonceAcheteur = [];
+    tabAnnonceAcheteur.push(
+      profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 1]
+    );
+    tabAnnonceAcheteur.push(
+      profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 2]
+    );
+    tabAnnonceAcheteur.push(
+      profilUser.annonce_acheteur[profilUser.annonce_acheteur.length - 3]
+    );
+
+    console.log("l425", tabAnnonceVendeur);
+    console.log("l426", tabAnnonceAcheteur);
+    // console.log("l426", tabAnnonceAcheteur);
+
+    const valueTabAnnVendeur1 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[0]) });
+    const valueTabAnnVendeur2 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[1]) });
+    const valueTabAnnVendeur3 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceVendeur[2]) });
+
+    // console.log(valueTabAnnVendeur3)
+    let recupValVendeur = [
+      valueTabAnnVendeur1,
+      valueTabAnnVendeur2,
+      valueTabAnnVendeur3,
+    ];
+
+    console.log("l428", recupValVendeur);
+    // console.log("l422", valueTabAnnVendeur)
+
+    const valueTabAnnAcheteur1 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[0]) });
+    const valueTabAnnAcheteur2 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[1]) });
+    const valueTabAnnAcheteur3 = await db
+      .collection("Annonces")
+      .findOne({ _id: MongoClient.ObjectId(tabAnnonceAcheteur[2]) });
+
+    let recupValAcheteur = [
+      valueTabAnnAcheteur1,
+      valueTabAnnAcheteur2,
+      valueTabAnnAcheteur3,
+    ];
+
+    console.log("l437", recupValAcheteur);
 
     if (!req.session || !req.session.accessToken) {
       res.render("pages/profil", { users, isLoggedIn: false });
@@ -364,7 +436,12 @@ function makeApp(mongoClient) {
         process.env.JWT_ALGORITHM || ""
       );
 
-      res.render("pages/profil", { users, isLoggedIn: true });
+      res.render("pages/profil", {
+        users,
+        isLoggedIn: true,
+        recupValVendeur,
+        recupValAcheteur,
+      });
     } catch (error) {
       req.session.destroy(() => {
         res.render("pages/profil", { users, isLoggedIn: false });
@@ -373,10 +450,11 @@ function makeApp(mongoClient) {
     }
   });
 
+
   app.get("/api/logout", sessionParser, async (req, res) => {
     if (req.session) {
       req.session.destroy(() => {
-        res.render("pages/home", { isLoggedIn: false });
+        res.redirect("/");
       });
     }
   });
@@ -386,6 +464,7 @@ function makeApp(mongoClient) {
     const token = await oauthClient.getTokensFromAuthorizationCode(
       stringiAuthCode
     );
+
 
     //code qui permet de décoder le token
     const [header, payload] = token.id_token.split(".");
@@ -452,6 +531,7 @@ function makeApp(mongoClient) {
         const newPath = tempPath + ".png";
         const dbPath = "/static/uploads/" + req.file.filename + ".png";
 
+
         const dataForm = req.body;
         const annonce = {
           email: dataForm.email,
@@ -482,10 +562,12 @@ function makeApp(mongoClient) {
 
         if (path.extname(req.file.originalname).toLowerCase() === ".png") {
           fs.rename(tempPath, newPath, (err) => {
+
             res.status(200).redirect(`/locations/${createdId}`);
           });
         } else {
           fs.unlink(tempPath, (err) => {
+
             res.status(403).redirect(`/locations/${createdId}`);
           });
         }
@@ -507,7 +589,42 @@ function makeApp(mongoClient) {
         const result = await db.collection("Annonces").insertOne(annonce);
         const createdId = result.insertedId;
 
+
         const logguedUserEmail = req.session.mail;
+        // const user = await db.collection("users").findOne({mail:logguedUserEmail});
+        const Id = await db
+          .collection("Users")
+          .updateOne(
+            { mail: logguedUserEmail },
+            { $push: { annonce_vendeur: createdId } }
+          );
+        res.status(200).redirect(`/locations/${createdId}`);
+      }
+      // }
+      // );
+
+      //console.log(Id);
+      // trouver le user dans la collection Users
+
+      //console.log("j'ai reussi");
+
+      // trouver dans mongodb comment patch un tableau de donnee
+      // dans le user en question : rajouter l'id de l'annonce dans le tableau dans "annonce_vendeur"
+
+      //     var cookieSession = require('cookie-session');
+      //     app.use(cookieSession({
+      //     keys: ['secret1', 'secret2']
+      // }));
+      // console.log(createdId);
+
+      //     var cookieSession = require('cookie-session');
+      //     app.use(cookieSession({
+      //     keys: ['secret1', 'secret2']
+      // }));
+
+
+        const logguedUserEmail = req.session.mail;
+
 
         const Id = await db
           .collection("Users")
@@ -519,6 +636,7 @@ function makeApp(mongoClient) {
       }
     }
   );
+
 
   app.post("/locations", async (req, res) => {
     // on recherche les données saisies par l'user dans le formulaire
