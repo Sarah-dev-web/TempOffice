@@ -1,3 +1,15 @@
-.text {
-  color: white;
+.fond{
+  background-color: #666;
+
+}
+
+/* .special_button_color {
+
+} */
+
+.special_button_color {
+  /* background-color: #666; */
+  color :  #FFFF; 
+  color: #FFFF !important;
+  
 }
