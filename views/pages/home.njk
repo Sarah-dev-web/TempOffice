@@ -1,21 +1,15 @@
-{% extends "layout/index.njk" %}
+{% extends "layout/index.njk" %} {% block beforeContainer %} {% endblock %} 
 
-{% block beforeContainer %}
- 
-{% endblock %}
+{%block content %}
 
-{% block content %}
-<div class="jumbotron jumbotron-fluid">
-  <div class="container">
+{# <div class="jumbotron jumbotron-fluid"> #}
+  <div class="container my-3">
     <h1 class="display-4">Vos prochaines réunions ou vous voulez</h1>
        <p class="lead">trouvez ou proposez votre salle de réunion</p>
           <img class="card-img-top" src="static/images/6.png" alt="Card image cap">
         <p class="lead">
-    <a class="btn btn-primary btn-lg" href="/locations" role="button" > découvrir nos biens</a>
+    <a class="btn btn-info btn-lg btn-block" href="/locations" role="button" > découvrir nos biens</a>
         </p>
-  </div>       
-</div>
-
 <div class="card-deck">
   <div class="card">
     <img class="card-img-top" src="static/images/SalleStreetHawk.png" alt="Card image cap">
@@ -26,7 +20,7 @@
 
   
     <div class="card-footer">
-      <a href="locations/{{selectThreeAnnonces[0]._id}}"  class="btn btn-primary btn-lg btn-block" role="button">  Louez-moi </a>  
+      <a href="locations/{{selectThreeAnnonces[0]._id}}"  class="btn btn-info btn-lg btn-block" role="button">  Louez-moi </a>  
     </div>
 </div>
 
@@ -38,7 +32,7 @@
     </div>
 
     <div class="card-footer">
-      <a href="locations/{{selectThreeAnnonces[1]._id}}"  class="btn btn-primary btn-lg btn-block" role="button"> Louez moi  </a>
+      <a href="locations/{{selectThreeAnnonces[1]._id}}"  class="btn btn-info btn-lg btn-block" role="button"> Louez moi  </a>
     </div>
 </div>
 
@@ -51,9 +45,12 @@
     </div>
 
     <div class="card-footer">
-      <a href="locations/{{selectThreeAnnonces[2]._id}}"  class="btn btn-primary btn-lg btn-block" role="button"> Louez moi  </a>
+      <a href="locations/{{selectThreeAnnonces[2]._id}}"  class="btn btn-info btn-lg btn-block" role="button"> Louez moi  </a>
     </div>
   
 </div>
+  </div>       
+</div>
+
  
 {% endblock %}
