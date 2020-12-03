@@ -3,7 +3,7 @@
 {% block content %}
   <body>
     <div class="mt-5">
-      <form method="POST" action="/api/creation_annonce">
+      <form method="POST" enctype="multipart/form-data" action="/api/creation_annonce">
         <div class="form-group">
           <label for="usr">Titre :
           </label>
@@ -49,7 +49,7 @@
         </div>
         <p>Photo du bien :
         </p>
-            <input class="form-control" name="image" type="text" placeholder="://url">
+            <input name="file" type="file">
         <p>Liste du mobilier :</p>
         <div class="form-group">
           <textarea class="form-control" rows="5" id="mobilier" name="mobilier"></textarea>

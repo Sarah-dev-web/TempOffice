@@ -10,33 +10,32 @@
     <div class="d-flex justify-content-center flex-wrap">
       {% for annonce in annonces %}
         <div class="card border-info p-1 m-1 mt-4 shadow-lg"style="width: 16rem;">
-{% if annonce.image %}
-      <div class="col-4 col-md-3">
-        <img src="{{annonce.image}}" alt="{{annonce.titre}} cover" style="max-width: 255px;">
-      </div>
-    {%else%}
-      <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" style="max-width: 255px;" alt="Pas d'image">
-    {%endif%}          <div class="card-body">
-            <h5 class="card-title">{{ annonce.titre}}</h5>
-            <p class="card-text">
-              <ul id="list">
-                <li>{{annonce.taille}}</li>
-                <li>{{annonce.ville}}</li>
-                <li>{{annonce.prix}}</li>
-
-              </ul>
-            </p>
-
-            <div class="card-footer">
-              <a href="/locations/{{annonce._id}}"  class="btn btn-info btn-block" role="button"> Voir</a>
+          {% if annonce.image %}
+            <div class="col-4 col-md-3">
+              <img src="{{annonce.image}}" alt="{{annonce.titre}} cover" style="max-width: 255px;">
             </div>
-          </div>
+          {%else%}
+              <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" style="max-width: 255px;" alt="Pas d'image">
+          {%endif%}
+            <div class="card-body">
+              <h5 class="card-title">{{ annonce.titre}}</h5>
+              <p class="card-text">
+                <ul id="list">
+                  <li>{{annonce.taille}}</li>
+                  <li>{{annonce.ville}}</li>
+                  <li>{{annonce.prix}}</li>
 
-        </div>
-      {% else %}
-        <li>Cela devrait s'afficher si la collection 'annonce' est vide</li>
-      {% endfor %}
+                </ul>
+              </p>
+
+              <div class="card-footer">
+                <a href="/locations/{{annonce._id}}"  class="btn btn-info btn-block" role="button"> Voir</a>
+              </div>
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
     </div>
   </div>
-</div>
 {% endblock %}
