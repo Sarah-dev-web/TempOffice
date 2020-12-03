@@ -5,88 +5,52 @@
 {# <div class="jumbotron jumbotron-fluid"> #}
   <div class="container my-3">
     <h1 class="display-4">Vos prochaines réunions ou vous voulez</h1>
-    <p class="lead">trouvez ou proposez votre salle de réunion</p>
-    <img class="card-img-top" src="static/images/6.png" alt="Card image cap" />
-    <p class="lead">
-    
-      <a class="btn btn-info btn-lg btn-block"
-         href="/locations" 
-         role="button">découvrir nos biens</a>
-    </p>
-    <div class="card-deck">
-      <div class="card">
-        <img
-          class="card-img-top"
-          src="static/images/SalleStreetHawk.png"
-          alt="Card image cap"
-        />
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This content is a little bit longer.
-          </p>
-        </div>
+       <p class="lead">trouvez ou proposez votre salle de réunion</p>
+          <img class="card-img-top" src="static/images/6.png" alt="Card image cap">
+        <p class="lead">
+    <a class="btn btn-primary btn-lg" href="/locations" role="button" > découvrir nos biens</a>
+        </p>
+  </div>       
+</div>
 
-        <div class="card-footer">
-          <a
-            href="/locations/:location_id"
-            class="btn btn-info btn-lg btn-block"
-            role="button"
-          >
-            Louez moi
-          </a>
-        </div>
-      </div>
-      <div class="card">
-        <img
-          class="card-img-top"
-          src="static/images/1.jpg"
-          alt="Card image cap"
-        />
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">
-            This card has supporting text below as a natural lead-in to
-            additional content.
-          </p>
-        </div>
-        <div class="card-footer">
-          <a
-            href="/locations/:location_id"
-            class="btn btn-info btn-lg btn-block"
-            role="button"
-          >
-            Louez moi
-          </a>
-        </div>
-      </div>
-      <div class="card">
-        <img
-          class="card-img-top"
-          src="static/images/1.jpg"
-          alt="Card image cap"
-        />
-        <div class="card-body">
-          <h5 class="card-title">Card title</h5>
-          <p class="card-text">
-            This is a wider card with supporting text below as a natural lead-in
-            to additional content. This card has even longer content than the
-            first to show that equal height action.
-          </p>
-        </div>
-        <div class="card-footer">
-          <a
-            href="/locations/:location_id"
-            class="btn btn-info btn-lg btn-block"
-            role="button"
-          >
-            Louez moi
-          </a>
-        </div>
-      </div>
-    </div>
+<div class="card-deck">
+  <div class="card">
+    <img class="card-img-top" src="static/images/SalleStreetHawk.png" alt="Card image cap">
+      <div class="card-body">
+    <h5 class="card-title">{{selectThreeAnnonces[0].titre}}</h5>
+  <p class="card-text">{{selectThreeAnnonces[0].description}}</p>
   </div>
 
+  
+    <div class="card-footer">
+      <a href="locations/{{selectThreeAnnonces[0]._id}}"  class="btn btn-primary btn-lg btn-block" role="button">  Louez-moi </a>  
+    </div>
 </div>
-  {% endblock %}
+
+<div class="card">
+    <img class="card-img-top" src="static/images/1.jpg" alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">{{selectThreeAnnonces[1].titre}}</h5>
+      <p class="card-text"> {{selectThreeAnnonces[1].description}}</p>
+    </div>
+
+    <div class="card-footer">
+      <a href="locations/{{selectThreeAnnonces[1]._id}}"  class="btn btn-primary btn-lg btn-block" role="button"> Louez moi  </a>
+    </div>
+</div>
+
+
+<div class="card">
+    <img class="card-img-top" src="static/images/1.jpg" alt="Card image cap">
+    <div class="card-body">
+      <h5 class="card-title">{{selectThreeAnnonces[2].titre}}</h5>
+      <p class="card-text">{{selectThreeAnnonces[2].description}}</p>
+    </div>
+
+    <div class="card-footer">
+      <a href="locations/{{selectThreeAnnonces[2]._id}}"  class="btn btn-primary btn-lg btn-block" role="button"> Louez moi  </a>
+    </div>
+  
+</div>
+ 
+{% endblock %}
