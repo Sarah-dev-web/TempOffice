@@ -350,12 +350,10 @@ function makeApp(mongoClient) {
     res.redirect(authURLinString);
   });
 
-
   app.get("/profil", sessionParser, async (req, res) => {
     const users = req.session.mail;
     // res.json(annonce);
     // res.render("pages/location");
-
 
     const profilUser = await db
       .collection("Users")
@@ -450,7 +448,6 @@ function makeApp(mongoClient) {
     }
   });
 
-
   app.get("/api/logout", sessionParser, async (req, res) => {
     if (req.session) {
       req.session.destroy(() => {
@@ -464,7 +461,6 @@ function makeApp(mongoClient) {
     const token = await oauthClient.getTokensFromAuthorizationCode(
       stringiAuthCode
     );
-
 
     //code qui permet de décoder le token
     const [header, payload] = token.id_token.split(".");
@@ -531,7 +527,6 @@ function makeApp(mongoClient) {
         const newPath = tempPath + ".png";
         const dbPath = "/static/uploads/" + req.file.filename + ".png";
 
-
         const dataForm = req.body;
         const annonce = {
           email: dataForm.email,
@@ -562,12 +557,10 @@ function makeApp(mongoClient) {
 
         if (path.extname(req.file.originalname).toLowerCase() === ".png") {
           fs.rename(tempPath, newPath, (err) => {
-
             res.status(200).redirect(`/locations/${createdId}`);
           });
         } else {
           fs.unlink(tempPath, (err) => {
-
             res.status(403).redirect(`/locations/${createdId}`);
           });
         }
@@ -588,7 +581,6 @@ function makeApp(mongoClient) {
         };
         const result = await db.collection("Annonces").insertOne(annonce);
         const createdId = result.insertedId;
-
 
         const logguedUserEmail = req.session.mail;
         // const user = await db.collection("users").findOne({mail:logguedUserEmail});
@@ -621,11 +613,8 @@ function makeApp(mongoClient) {
       //     app.use(cookieSession({
       //     keys: ['secret1', 'secret2']
       // }));
-
-      }
-    
+    }
   );
-
 
   app.post("/locations", async (req, res) => {
     // on recherche les données saisies par l'user dans le formulaire
