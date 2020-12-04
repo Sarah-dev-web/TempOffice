@@ -11,11 +11,10 @@
       {% for annonce in annonces %}
         <div class="card border-info p-1 m-1 mt-4 shadow-lg"style="width: 16rem;">
           {% if annonce.image %}
-            <div class="col-4 col-md-3">
-              <img src="{{annonce.image}}" alt="{{annonce.titre}} cover" style="max-width: 255px;">
-            </div>
+            
+              <img class="card-img-top" src="{{annonce.image}}" alt="{{annonce.titre}} cover">
           {%else%}
-              <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" style="max-width: 255px;" alt="Pas d'image">
+              <img src="https://www.tu-chemnitz.de/physik/TPSM/bilder/noimageavailable.png" class="card-img-top" alt="Pas d'image">
           {%endif%}
             <div class="card-body">
               <h5 class="card-title">{{ annonce.titre}}</h5>
