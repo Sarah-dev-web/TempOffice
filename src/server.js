@@ -613,16 +613,6 @@ function makeApp(mongoClient) {
       //     app.use(cookieSession({
       //     keys: ['secret1', 'secret2']
       // }));
-
-      const logguedUserEmail = req.session.mail;
-
-      const Id = await db
-        .collection("Users")
-        .updateOne(
-          { mail: logguedUserEmail },
-          { $push: { annonce_vendeur: createdId } }
-        );
-      res.status(200).redirect(`/locations/${createdId}`);
     }
   );
 
